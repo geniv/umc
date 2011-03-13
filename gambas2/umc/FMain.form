@@ -1,0 +1,406 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,85,78.5714)
+  Text = ("")
+  Icon = Picture["ikony/aplikace.png"]
+  { panel_jas Panel
+    MoveScaled(1,1,20,17)
+    Border = Border.Etched
+    { obrazek_jas PictureBox
+      MoveScaled(2,4.8571,7,6)
+    }
+    { jas_slider Slider
+      MoveScaled(3.2857,12,13.2857,3)
+      MinValue = 1
+      MaxValue = 20
+      PageStep = 5
+      Mark = True
+      Value = 20
+    }
+    { Label1 Label
+      MoveScaled(1,1,18,3)
+      Font = Font["Bold,+1"]
+      Text = ("Jas")
+      Alignment = Align.Center
+    }
+    { jas_stav Label
+      MoveScaled(9,4,10,7)
+      Font = Font["+5"]
+      Text = ("50%")
+      Alignment = Align.Center
+    }
+    { jas_plus Button
+      MoveScaled(17,12,2,3)
+      Text = ("+")
+    }
+    { jas_minus Button
+      MoveScaled(1,12,2,3)
+      Text = ("-")
+    }
+  }
+  { panel_hlasitost Panel
+    MoveScaled(22,1,20,17)
+    Border = Border.Etched
+    { obrazek_zvuk PictureBox
+      MoveScaled(2,4,6,6)
+    }
+    { hlasitost_slider Slider
+      MoveScaled(2,12,16,3)
+      MinValue = 1
+      MaxValue = 20
+      PageStep = 5
+      Mark = True
+    }
+    { Label2 Label
+      MoveScaled(1,1,18,3)
+      Font = Font["Bold,+1"]
+      Text = ("Hlasitost")
+      Alignment = Align.Center
+    }
+    { hlasitost_ztisit CheckBox
+      MoveScaled(10,6,9,3)
+      Text = ("Zti\xC5\xA1it")
+    }
+  }
+  { panel_acpi Panel
+    MoveScaled(43,19,41,21)
+    Border = Border.Etched
+    { baterie_obrazek PictureBox
+      MoveScaled(1,1,9,18)
+      Picture = Picture["ikony/baterka/40.png"]
+      Stretch = True
+    }
+    { profil ComboBox
+      MoveScaled(12,12,28,3)
+      Enabled = False
+      Text = ("")
+      ReadOnly = True
+      List = []
+    }
+    { Button5 Button
+      MoveScaled(26,16,14,3)
+      Enabled = False
+      Text = ("Ulo\xC5\xBEit")
+    }
+    { baterie_procento TextLabel
+      MoveScaled(12,1,28,3)
+      Text = ("Baterie: xx%")
+    }
+    { baterie_cas TextLabel
+      MoveScaled(12,4,28,3)
+      Text = ("Zb\xC3\xBDvaj\xC3\xADc\xC3\xAD \xC4\x8Das (odhad): xx:yy:zz")
+    }
+    { Button6 Button
+      MoveScaled(12,16,13,3)
+      Enabled = False
+      Text = ("Na\xC4\x8D\xC3\xADst")
+    }
+    { Label9 Label
+      MoveScaled(12,9,24,3)
+      Font = Font["Bold,+1"]
+      Text = ("Profil:")
+    }
+  }
+  { Panel6 Panel
+    MoveScaled(1,19,41,21)
+    Border = Border.Etched
+    { cpu ComboBox
+      MoveScaled(2,16,23,3)
+      Enabled = False
+      Text = ("")
+      ReadOnly = True
+      List = [("Vysok\xC3\xBD v\xC3\xBDkon"), ("Podle popt\xC3\xA1vky"), ("N\xC3\xADzk\xC3\xA1 spot\xC5\x99eba")]
+    }
+    { TextLabel1 TextLabel
+      MoveScaled(1,1,39,3)
+      Font = Font["Bold,+1"]
+      Text = ("CPU:")
+      Alignment = Align.Center
+    }
+    { PictureBox6 PictureBox
+      MoveScaled(2,4,11,6)
+      Picture = Picture["ikony/CPU.png"]
+    }
+    { Button7 Button
+      MoveScaled(26,16,14,3)
+      Enabled = False
+      Text = ("Nastavit")
+    }
+    { cpu_typ Label
+      MoveScaled(18.5714,4,21.1429,2.2857)
+      Text = ("Typ:")
+      Alignment = Align.Left
+    }
+    { cpu_frekcence Label
+      MoveScaled(12.8571,7,27,2.2857)
+      Text = ("Frekvence:")
+      Alignment = Align.Left
+    }
+    { cpu_pocet Label
+      MoveScaled(12.1429,10,27.1429,2.2857)
+      Text = ("Po\xC4\x8Det jader:")
+      Alignment = Align.Left
+    }
+    { Label8 Label
+      MoveScaled(2,13,15,3)
+      Text = ("\xC5\x98\xC3\xADzen\xC3\xAD v\xC3\xBDkonu:")
+    }
+  }
+  { panel_touchpad Panel
+    MoveScaled(43,1,20,17)
+    Border = Border.Etched
+    { PictureBox7 PictureBox
+      MoveScaled(7,4,6.8571,6.8571)
+      Picture = Picture["ikony/touchpad.png"]
+      Alignment = Align.Center
+    }
+    { Label5 Label
+      MoveScaled(1,1,18,3)
+      Font = Font["Bold,+1"]
+      Text = ("Touchpad")
+      Alignment = Align.Center
+    }
+    { touchpad_start_stop Button
+      MoveScaled(2,12,16,3)
+      ToolTip = ("Otev\xC5\x99e okno s nastaven\xC3\xADm deformace obrazu")
+      Text = ("Start / Stop")
+    }
+  }
+  { panel_xrandr Panel
+    MoveScaled(64,1,20,17)
+    Border = Border.Etched
+    { PictureBox12 PictureBox
+      MoveScaled(6,4,6,6)
+      Picture = Picture["ikony/hp_monitor.png"]
+    }
+    { Button1 Button
+      MoveScaled(2,12,16,3)
+      ToolTip = ("Otev\xC5\x99e okno s nastaven\xC3\xADm deformace obrazu")
+      Text = ("Upravit")
+    }
+    { Label16 Label
+      MoveScaled(1,1,18,3)
+      Font = Font["Bold,+1"]
+      Text = ("Rotace a jin\xC3\xA9")
+      Alignment = Align.Center
+    }
+  }
+  { VPanel1 VPanel
+    MoveScaled(1,40,84,39)
+    { ostatni_expander Expander
+      MoveScaled(0,0,83,28)
+      Font = Font["10"]
+      ToolTip = ("Zobrazit/Skr\xC3\xBDt dal\xC5\xA1\xC3\xAD mo\xC5\xBEnosti")
+      Text = ("Ostatn\xC3\xAD")
+      Animated = True
+      { panel_dropbox Panel
+        MoveScaled(42,0,20,25)
+        Font = Font["9"]
+        Border = Border.Etched
+        { dropbox_restart Button
+          MoveScaled(2,20,16,3)
+          Font = Font["9"]
+          Text = ("Restart")
+        }
+        { Label13 Label
+          MoveScaled(1,1,18,3)
+          Font = Font["Bold,10"]
+          Text = ("Dropbox")
+          Alignment = Align.Center
+        }
+        { dropbox_start_stop Button
+          MoveScaled(2,16,16,3)
+          Font = Font["9"]
+          Text = ("Start / Stop")
+        }
+        { PictureBox5 PictureBox
+          MoveScaled(6,5,6.8571,6.8571)
+          Picture = Picture["ikony/dropbox4.png"]
+        }
+      }
+      { panel_shutdown Panel
+        MoveScaled(63,0,20,25)
+        Font = Font["9"]
+        Border = Border.Etched
+        { Label14 Label
+          MoveScaled(1,1,18,3)
+          Font = Font["Bold,10"]
+          Text = ("\xC4\x8Casov\xC3\xA9 vypnut\xC3\xAD")
+          Alignment = Align.Center
+        }
+        { TextBox1 TextBox
+          MoveScaled(4,16,4.2857,3)
+          Font = Font["9"]
+          Text = ("xx")
+        }
+        { TextLabel3 TextLabel
+          MoveScaled(1,12.7143,18,2)
+          Font = Font["9"]
+          Text = ("v (hodin:minunt):")
+          Alignment = Align.Center
+        }
+        { TextBox2 TextBox
+          MoveScaled(11,16,4.2857,3)
+          Font = Font["9"]
+          Text = ("xx")
+        }
+        { Label15 Label
+          MoveScaled(8.5714,15.7143,2,3)
+          Font = Font["9"]
+          Text = (":")
+          Alignment = Align.Center
+        }
+        { Button12 Button
+          MoveScaled(2,20,7,3)
+          Font = Font["9"]
+          Text = ("OK")
+        }
+        { Button13 Button
+          MoveScaled(10,20,7,3)
+          Font = Font["9"]
+          Text = ("Zru\xC5\xA1it")
+        }
+        { PictureBox8 PictureBox
+          MoveScaled(8,4,4,4)
+          Picture = Picture["ikony/system_log_out.png"]
+        }
+        { CheckBox5 CheckBox
+          MoveScaled(1,9,18,3)
+          Font = Font["9"]
+          Text = ("Restart?")
+        }
+      }
+      { panel_webcam Panel
+        MoveScaled(0,0,20,25)
+        Font = Font["9"]
+        Border = Border.Etched
+        { PictureBox9 PictureBox
+          MoveScaled(6,5,6.8571,6.8571)
+          Picture = Picture["ikony/webcam.png"]
+        }
+        { Button3 Button
+          MoveScaled(2,20,16,3)
+          Font = Font["9"]
+          Text = ("Testovat")
+        }
+        { Label10 Label
+          MoveScaled(1,1,18,3)
+          Font = Font["Bold,10"]
+          Text = ("Test Webkamery")
+          Alignment = Align.Center
+        }
+        { CheckBox3 CheckBox
+          MoveScaled(1,13,18,3)
+          Font = Font["9"]
+          Text = ("Obr\xC3\xA1cen\xC4\x9B")
+        }
+        { CheckBox4 CheckBox
+          MoveScaled(1,16,18,3)
+          Font = Font["9"]
+          Text = ("Zrcadlov\xC4\x9B")
+        }
+      }
+      { panel_apache Panel
+        MoveScaled(21,0,20,25)
+        Font = Font["9"]
+        Border = Border.Etched
+        { apache_restart Button
+          MoveScaled(2,20,16,3)
+          Font = Font["9"]
+          Text = ("Restart")
+        }
+        { PictureBox10 PictureBox
+          MoveScaled(5,6,10,5)
+          Picture = Picture["ikony/apache_icon.png"]
+        }
+        { Label11 Label
+          MoveScaled(1,1,18,3)
+          Font = Font["Bold,10"]
+          Text = ("Apache server")
+          Alignment = Align.Center
+        }
+        { apache_start_stop Button
+          MoveScaled(2,16,16,3)
+          Font = Font["9"]
+          Text = ("Start / Stop")
+        }
+      }
+    }
+    { mezera_expander Panel
+      MoveScaled(0,28,24,1)
+    }
+    { Panel11 Panel
+      MoveScaled(0,29,83,9)
+      Border = Border.Etched
+      { PictureBox11 PictureBox
+        MoveScaled(1,1,3.4286,3.4286)
+        Picture = Picture["ikony/contact_xa_overlay.png"]
+      }
+      { Label17 Label
+        MoveScaled(6,1,24,3)
+        Font = Font["Bold,+1"]
+        Text = ("Doba b\xC4\x9Bhu syst\xC3\xA9mu:")
+      }
+      { Separator1 Separator
+        MoveScaled(30,1,1,7)
+      }
+      { PictureBox4 PictureBox
+        MoveScaled(33,1,3.4286,3.4286)
+        Picture = Picture["ikony/network.png"]
+      }
+      { Separator2 Separator
+        MoveScaled(59,1,1,7)
+      }
+      { Button10 Button
+        MoveScaled(71,1,10,3)
+        Enabled = False
+        Text = ("Nastaven\xC3\xAD")
+      }
+      { sit_active Label
+        MoveScaled(38,1.1429,13,3)
+        Font = Font["Bold,+1"]
+        Text = ("S\xC3\xAD\xC5\xA5:")
+      }
+      { uptime_cas Label
+        MoveScaled(1,5,28,3)
+        Text = ("xx:yy:zz")
+        Alignment = Align.Center
+      }
+      { Button11 Button
+        MoveScaled(68,5,13,3)
+        Enabled = False
+        Text = ("Skr\xC3\xBDt do li\xC5\xA1ty")
+      }
+      { sit_prijato Label
+        MoveScaled(36,5,8,3)
+        ToolTip = ("Rychlost stahov\xC3\xA1n\xC3\xAD")
+        AutoResize = True
+        Text = ("xx kX/s")
+      }
+      { sit_odeslano Label
+        MoveScaled(48,5,8,3)
+        ToolTip = ("Rychlost uploadu")
+        AutoResize = True
+        Text = ("xx kX/s")
+      }
+      { PictureBox13 PictureBox
+        MoveScaled(33,5.4286,2.2857,2.2857)
+        ToolTip = ("Rychlost stahov\xC3\xA1n\xC3\xAD")
+        Picture = Picture["ikony/downlink.png"]
+        Stretch = True
+      }
+      { PictureBox14 PictureBox
+        MoveScaled(45,5.4286,2.2857,2.2857)
+        ToolTip = ("Rychlost uploadu")
+        Picture = Picture["ikony/uplink.png"]
+        Stretch = True
+      }
+    }
+  }
+  { casovac #Timer
+    #X = 14
+    #Y = 14
+    Delay = 10000
+  }
+}

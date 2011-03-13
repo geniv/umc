@@ -1,0 +1,24 @@
+Simple mixer control 'Master',0
+  Capabilities: pvolume pswitch pswitch-joined penum
+  Playback channels: Front Left - Front Right
+  Limits: Playback 0 - 74
+  Mono:
+  Front Left: Playback 63 [85%] [-11.00dB] [on]
+  Front Right: Playback 63 [85%] [-11.00dB] [on]
+Simple mixer control 'PCM',0
+  Capabilities: pvolume penum
+  Playback channels: Front Left - Front Right
+  Limits: Playback 0 - 255
+  Mono:
+  Front Left: Playback 252 [99%] [0.60dB]
+  Front Right: Playback 252 [99%] [0.60dB]
+Simple mixer control 'Capture',0
+  Capabilities: cvolume cswitch penum
+  Capture channels: Front Left - Front Right
+  Limits: Capture 0 - 80
+  Front Left: Capture 74 [92%] [0.00dB] [on]
+  Front Right: Capture 74 [92%] [0.00dB] [on]
+Simple mixer control 'Analog Mic Boost',0
+  Capabilities: cenum
+  Items: '0dB' '10dB' '20dB' '30dB' '40dB'
+  Item0: '40dB'

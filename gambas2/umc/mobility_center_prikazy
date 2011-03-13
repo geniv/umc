@@ -1,0 +1,117 @@
+sudo: gksudo
+napajeni: acpi
+obrazovka: xrandr
+zvuk: amixer ( http://www.digipedia.pl/man/doc/view/amixer.1/ )
+((amixer != vystupu utility v panelu, vyjma dB ty jsou stejny))
+pouziti:
+amixer sget Master
+amixer sset Master playback on
+amixer sset Master playback off
+amixer sset Master playback 50%
+amixer sset Master playback 28
+
+odkaz na sit: gnome-nettool
+restart sitoveho manageru: gksudo /etc/init.d/network-manager
+znovuziskani dhcp adresy: gksudo dhclient
+
+dropbox status on/off
+
+restart zvuku: gksudo /etc/init.d/alsa-utils 
+
+restart apache: gksudo /etc/init.d/apache2 restart 
+
+dostupne hodnoty seznorů v konzoly: sensors
+....sit se da konfigurovat a ziskavat info z: iwconfig, ifconfig a ip 
+sit:
+netstat -i
+ip route list
+ifconfig {rozhrani}
+if [ -x /etc/init.d/apache2 ]; then
+
+zjisteni aktivniho rozhrani:
+ip route | awk -W posix '/dev/ { print $3 }' | head -n 1
+
+'posefovat prava na jas a apache a podobne
+
+##############################################
+zjištění jasu: cat /proc/acpi/video/VGA/LCD/brightness 
+přečíst levels a dle něho nastavit kroky
+
+	sudo -s "echo -n XX > /proc/acpi/video/VGA/$( ls /proc/acpi/video/VGA/ | grep LCD )/brightness"
+	cat /proc/acpi/video/VGA/$( ls /proc/acpi/video/VGA/ | grep LCD )/info 
+
+[12:08:16] <marwin> tak to napiš do skriptu, kterumu se předava jeden parametr jako nastavení jasu
+[12:08:20] <marwin> pak zadej
+[12:08:28] <marwin> chown root skript
+[12:08:55] <marwin> chmod u+rsx skript
+[12:09:39] <geniv> hmm supr
+[12:14:01] <marwin> ..... jednak další chmod
+[12:14:09] <marwin> chmod o+rx skript
+[12:14:15] <marwin> jednek to asi nebude fungovat :(
+[12:17:31] <marwin> pres sud
+[12:17:32] <marwin> sudo
+
+nebo:
+test podpory v:
+cat /proc/acpi/video/VGA/LCDD/info
+mel by byt: known by bios: yes
+xbacklight -get
+xbacklight -set 100%
+
+##############################################
+
+cpu: gksudo cpufreq-set -d [minimum frequency]MHz -u [maximum frequency]MHz 
+ -pořešit více jader -> nastavení výkonosti pro všechna jádra zároveň <-
+ -http://manpages.ubuntu.com/manpages/hardy/man1/cpufreq-set.1.html
+
+<nepoužívat!>
+bt off: sudo hciconfig hci0 down
+bt on: sudo hciconfig hci0 up
+</nepoužívat!>
+
+uptime
+	časované vypnutí: gksudo shutdown -h|r 3:00
+	manual: man 8 shutdown
+
+	test webkamery: 
+mplayer tv:// -tv driver=v4l2:width=640:height=480:device=/dev/video0 -fps 15 [-flip] -fs
+(flip jedine kdyz je kamera fyzicky obracena ;) )
+
+-ještě by tam mohl být checkbox pro vypnutí touchpad-u (trvale on nebo off)
+--zůstává otazkou přes jakou utilitku to řešit.. nebo přímo přes modprobe?
+
+Apache2 is NOT running.
+
+$ cat /proc/net/dev
+Inter-|   Receive                                                |  Transmit
+ face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed
+    lo:   40810     479    0    0    0     0          0         0    40810     479    0    0    0     0       0          0
+  eth0: 11642823   22824    0    0    0     0          0         0  3283257   13849    0    0    0     0       0          0
+ wlan0:   25180     204    0    0    0     0          0         0    18680      75    0    0    0     0       0          0
+
+$ cat /proc/net/dev
+Inter-|   Receive                                                |  Transmit
+ face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed
+    lo:13921312   92126    0    0    0     0          0         0 13921312   92126    0    0    0     0       0          0
+  eth0:1288653786 22478012    0    0    0     0          0         0 3387885213 33656834    0    0    0     0       0          0
+ wlan0:96459335  322461    0    0    0     0          0         0  1175757    8420    0    0    0     0       0          0
+vboxnet0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
+  pan0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
+
+
+touchpad viz: http://www.linuxine.com/2008/06/how-to-disable-touchpad-in-ubuntu.html
+enable:
+synclient touchpadoff=0
+disable:
+synclient touchpadoff=1
+
+cpu podrobnosti:
+/sys/devices/system/cpu/cpu0/cpufreq
+cpuinfo_max_freq
+cpuinfo_min_freq
+
+/proc/cpufreq
+
+-G performance/powersave
+
+auto spousteni, po startu...

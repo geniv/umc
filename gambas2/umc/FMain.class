@@ -1,0 +1,447 @@
+' Gambas class file
+
+PUBLIC SUB _new()
+  DIM pocet AS Integer
+
+  obrazek_jas.Picture = Picture["ikony/jas.png"]
+  obrazek_zvuk.Picture = Picture["ikony/sound.png"]
+
+  casovac.Enabled = TRUE
+
+  'kontrola znovu spusteni
+  pocet = Spusteno()
+  IF pocet > 1 THEN 
+    Message.Info(Subst(("Program již beží (&1x) a proto bude ukončen."), pocet))
+    ME.Close(1)
+  ENDIF 
+
+  'kontrola existenci jednotliych utilit
+  panel_jas.Enabled = existJas()
+  panel_hlasitost.Enabled = existHlasitost()
+  panel_touchpad.Enabled = existTouchepad()
+  panel_xrandr.Enabled = existXrandr()
+  panel_acpi.Enabled = existAcpi()
+  panel_webcam.Enabled = existWebcam()
+  panel_apache.Enabled = existApache()
+  panel_shutdown.Enabled = existShutdown()
+  panel_dropbox.Enabled = existDropbox()
+END
+
+'pocitani spustenych instanci programu
+PRIVATE SUB Spusteno() AS Integer
+  DIM ret_shell AS String
+  SHELL Subst("ps -ef | grep 'gbr' | grep -c '&1'", Application.Name) TO ret_shell
+  RETURN CInt(ret_shell) - 1
+END
+
+
+PRIVATE SUB existJas() AS Boolean
+  'DIM ret_shell AS String
+'dostacuje, ale ne uplne!!
+'/proc/acpi/video$ find . -name brightness -exec cat {} \;
+'/proc/acpi/video$ find . -name brightness -print -exec cat {} \;
+  'SHELL "echo -n $( cat /proc/acpi/video/VGA/$( ls /proc/acpi/video/VGA/ | grep LCD )/brightness )" WAIT TO ret_shell
+  'RETURN IIf(ret_shell = "<not supported>", FALSE, TRUE)
+  RETURN TRUE 'mozna jen v budoucnu tesotvat pripojeni dbus sbernice
+END
+
+PRIVATE SUB existHlasitost() AS Boolean
+  DIM ret_shell AS String
+  TRY SHELL "which amixer" WAIT TO ret_shell
+  RETURN ret_shell
+END
+
+PRIVATE SUB existTouchepad() AS Boolean
+  DIM ret_shell AS String
+  TRY SHELL "which synclient" WAIT TO ret_shell
+  RETURN ret_shell
+END
+
+PRIVATE SUB existXrandr() AS Boolean
+  DIM ret_shell AS String
+  TRY SHELL "which xrandr" WAIT TO ret_shell
+  RETURN ret_shell
+END
+
+PRIVATE SUB existAcpi() AS Boolean
+  DIM ret_shell AS String
+  TRY SHELL "which acpi" WAIT TO ret_shell
+  RETURN ret_shell
+END
+
+PRIVATE SUB existWebcam() AS Boolean
+  'komplexni test?!
+END
+
+PRIVATE SUB existApache() AS Boolean
+  DIM ret_shell AS String
+  TRY SHELL "which apache2" WAIT TO ret_shell
+  RETURN ret_shell
+END
+
+PRIVATE SUB existDropbox() AS Boolean
+  DIM ret_shell AS String
+  TRY SHELL "which dropbox" WAIT TO ret_shell
+  RETURN ret_shell
+END
+
+PRIVATE SUB existShutdown() AS Boolean
+  DIM ret_shell AS String
+  TRY SHELL "which shutdown" WAIT TO ret_shell
+  RETURN ret_shell
+END
+
+
+PUBLIC SUB Form_Open()
+DIM ret_shell AS String
+  'nacteni pozice, expanderu
+  ME.X = Settings["win/x", 0]
+  ME.Y = Settings["win/y", 0]
+  ostatni_expander.Hidden = Settings["custom/ostatni", FALSE]
+  IF ostatni_expander.Hidden THEN 
+    ostatni_expander_Hide()
+      ELSE 
+    ostatni_expander_Show()
+  ENDIF 
+
+  nactiJas()
+  nactiHlasitost()
+  nactiTouchpad()
+  nactiCpu()
+  nactiBaterii()
+  nactiApache()
+  nactiDropbox()
+  nactiUptime()
+  nactiSit()
+
+'opravneni poresit pres skupiny!!! opravneni!! jen do urcitych slozek
+'SHELL "id" TO ret_shell
+'PRINT ret_shell
+
+'DEBUG ME.ScreenX;; ME.ScreenY
+END
+
+PUBLIC SUB Form_Close()
+  'ulozeni pozice, expanderu
+  Settings["win/x"] = ME.ScreenX - 1
+  Settings["win/y"] = ME.ScreenY - 27
+  Settings["custom/ostatni"] = ostatni_expander.Hidden
+
+'DEBUG ME.ScreenX;; ME.ScreenY
+END
+
+'schovani ostatnich polozek
+PUBLIC SUB ostatni_expander_Hide()
+  ME.Height = 367
+  mezera_expander.Visible = FALSE
+END
+
+'zobrazeni ostatnich polozek
+PUBLIC SUB ostatni_expander_Show()
+  ME.Height = 550
+  mezera_expander.Visible = TRUE
+END
+
+'fyzicke natavovani hlasitosti
+PRIVATE SUB nastavHlasitost()
+  SHELL Subst("amixer sset Master &1 > /dev/null", hlasitost_slider.Value)
+END
+
+'fyzicke nastavovani mute hlasitosti
+PRIVATE SUB nastavMuteHlasitost()
+  SHELL Subst("amixer sset Master &1 > /dev/null", IIf(hlasitost_ztisit.Value, "off", "on"))
+END
+
+'nastaveni pri zmene hodnoty hlasitosti
+PUBLIC SUB hlasitost_slider_Change()
+  nastavHlasitost()
+END
+
+PUBLIC SUB hlasitost_ztisit_Click()
+  nastavMuteHlasitost()
+END
+
+'nacte informace z utility pro zvuk
+PRIVATE SUB nactiHlasitost()
+  DIM ret_shell, kanal AS String
+  'zvuk
+  SHELL "echo -n $( amixer sget Master | awk -W posix '/Limits/ { print $3 }' )" TO ret_shell
+  'DEBUG ret_shell
+  hlasitost_slider.MinValue = CInt(ret_shell)
+  'hlasitost_slider.MinValue = ret_shell
+
+  SHELL "echo -n $( amixer sget Master | awk -W posix '/Limits/ { print $5 }' )" TO ret_shell
+  'DEBUG ret_shell
+  hlasitost_slider.MaxValue = CInt(ret_shell)
+
+  SHELL "echo -n $( amixer sget Master | awk -F': ' -W posix '/channels:/ { print $2 }' | awk -F'-' '{ print $1 }' )" TO kanal
+  'DEBUG kanal
+
+  SHELL Subst("echo -n $( amixer sget Master | awk -F': ' -W posix '/&1:/ { print $2 }' | awk '{ print $2 }' )", kanal) TO ret_shell
+  'DEBUG ret_shell
+  hlasitost_slider.Value = CInt(ret_shell)
+
+  SHELL Subst("echo -n $( amixer sget Master | awk -F': ' -W posix '/&1:/ { print $2 }' | awk '{ print $5 }' )", kanal) TO ret_shell
+  'DEBUG ret_shell
+  hlasitost_ztisit.Value = IIf(ret_shell = "[on]", FALSE, TRUE)
+END
+
+'nacte informace z utility pro baterii
+PRIVATE SUB nactiBaterii()
+  DIM ret_shell, stav AS String
+  DIM bat_obr AS Integer
+  DIM online AS Boolean
+  'DIM obr_blesk AS Picture
+  'baterie
+  SHELL "echo -n $( acpi | awk -F', ' '{ print $2 }' | awk -F'%' '{ print $1 }' )" TO ret_shell
+  'DEBUG ret_shell
+  baterie_procento.Text = Subst(("Baterie: &1%"), CInt(ret_shell))
+
+  bat_obr = CInt((CInt(ret_shell) / 100) * 10) * 10
+  'DEBUG bat_obr
+  baterie_obrazek.Picture = Picture[Subst("ikony/baterka/&1.png", bat_obr)]
+
+  'nacteni stavu baterie
+  SHELL "echo -n $( acpi | awk -F', ' '{ print $1 }' | awk '{ print $3 }' )" TO stav
+  'DEBUG stav
+
+  'nacteni stavu adapteru
+  SHELL "echo -n $( acpi -a | awk -F': ' '{ print $2 }' )" TO ret_shell
+  'DEBUG ret_shell
+  online = IIf(ret_shell = "on-line", TRUE, FALSE)
+
+  IF online THEN 
+'dodat blesk nabijeni nejak!
+    'obr_blesk = Picture["ikony/baterka/blesk.png"]
+    'obr_blesk.Transparent = TRUE
+    'obrazek_blesk.Picture = obr_blesk
+
+    IF stav = "Unknown" THEN
+      'nabito
+      baterie_cas.Text = ("Plně nabito")
+        ELSE
+      'nabijeni
+      SHELL "echo -n $( acpi | awk -F', ' '{ print $3 }' | awk '{ print $1 }' )" TO ret_shell
+      'DEBUG ret_shell
+      baterie_cas.Text = Subst(("Nabijení (odhad): &1"), ret_shell)
+    ENDIF 
+
+      ELSE 
+
+    IF stav = "Discharging" THEN
+      'vybijeni
+      SHELL "echo -n $( acpi | awk -F', ' '{ print $3 }' | awk '{ print $1 }' )" TO ret_shell
+      'DEBUG ret_shell
+      baterie_cas.Text = Subst(("Zbývající čas (odhad): &1"), ret_shell)
+    ENDIF 
+
+  ENDIF 
+END
+
+'nacte informace z utility pro cpu
+PRIVATE SUB nactiCpu()
+  DIM ret_shell AS String
+  'cpu
+  SHELL "echo -n $( cat /proc/cpuinfo | awk -F': ' -W posix '/model name/ { print $2 }' | awk -F'@ ' '{ print $1 }' | head -n 1 )" TO ret_shell
+  'DEBUG ret_shell
+  cpu_typ.Text = Left(Subst(("Typ: &1"), ret_shell), 20) & "..."
+  cpu_typ.ToolTip = Subst(("Typ: &1"), ret_shell)
+
+  'SHELL "echo -n $( cat /proc/cpuinfo | awk -F': ' -W posix '/model name/ { print $2 }' | awk -F'@ ' '{ print $2 }' | head -n 1 )" TO ret_shell
+  SHELL "echo -n $( cat /proc/cpuinfo | awk -F': ' -W posix '/bogomips/ { print $2/2 }' | head -n 1 )" TO ret_shell
+  'DEBUG ret_shell
+  cpu_frekcence.Text = Subst(("Frekvence: &1 MHz"), ret_shell)
+
+  SHELL "echo -n $( cat /proc/cpuinfo | awk -F': ' -W posix '/model name/ { print $2 }' | awk -F'@ ' '{ print $2 }' | wc -l )" TO ret_shell
+  'DEBUG ret_shell
+  cpu_pocet.Text = Subst(("Počet jader: &1"), ret_shell)
+END
+
+'nacte informace z utility pro uptime
+PRIVATE SUB nactiUptime()
+  DIM ret_shell AS String
+  'uptime
+  SHELL "echo -n $( uptime | awk -F',  ' '{ print $1 }' )" TO ret_shell
+  'DEBUG ret_shell
+  uptime_cas.Text = ret_shell
+END
+
+'nacte informace z dbus pro jas
+PRIVATE SUB nactiJas()
+  DIM ret_shell AS String
+
+  SHELL "echo -n $( qdbus org.gnome.PowerManager /org/gnome/PowerManager/Backlight GetBrightness )" WAIT TO ret_shell
+
+  jas_slider.MinValue = 0
+  jas_slider.MaxValue = 100
+  jas_slider.PageStep = 10
+
+  jas_slider.Value = CInt(ret_shell)
+  jas_stav.Text = Subst("&1%", jas_slider.Value)
+END
+
+PRIVATE SUB nastavJas(proc AS Integer)
+  SHELL Subst("qdbus org.gnome.PowerManager /org/gnome/PowerManager/Backlight SetBrightness &1 > /dev/null", proc) WAIT
+  nactiJas()
+END
+
+PUBLIC SUB jas_plus_Click()
+  DIM jas AS Integer
+  jas = jas_slider.Value + 10
+  nastavJas(jas)
+END
+
+PUBLIC SUB jas_minus_Click()
+  DIM jas AS Integer
+  jas = jas_slider.Value - 10
+  nastavJas(jas)
+END
+
+PUBLIC SUB jas_slider_MouseUp()
+  nastavJas(jas_slider.Value)
+END
+
+'hlavni casovac zarizeni
+PUBLIC SUB casovac_Timer()
+  nactiJas()
+  nactiHlasitost()
+  'nactiTouchpad()
+  nactiBaterii()
+  nactiUptime()
+  'deaktivovat kdyz je zabaleno!
+  IF NOT ostatni_expander.Hidden THEN
+    'webcam
+    nactiApache()
+    nactiDropbox()
+    'casovac, shutdown
+  ENDIF
+  nactiSit()
+END
+
+
+' PUBLIC SUB Form_KeyPress()
+'   IF Key.Control AND Key.Code = 87 THEN 
+'     ME.Hide()
+'     tray_icon.Visible = TRUE
+'     'TrayIcon1.Show()
+'     
+'   ENDIF
+'   'ME.Hide()
+' PRINT Key.Code
+' END
+' 
+' PUBLIC SUB tray_icon_MouseDown()
+' 
+'   IF Mouse.Button = 1 THEN
+'     ME.Show()
+'     tray_icon.Visible = FALSE
+'     'TrayIcon1.Hide()
+' 
+'     'TrayIcon
+'   ENDIF 
+' 'PRINT Mouse.Button
+' 
+' END
+
+
+PUBLIC SUB nactiDropbox()
+  DIM ret_shell AS String
+  IF panel_dropbox.Enabled THEN 
+    SHELL "echo -n $( dropbox status )" WAIT TO ret_shell
+
+    dropbox_start_stop.Enabled = IIf(ret_shell = "Dropbox isn't responding!", FALSE, TRUE)
+
+    'zastaven, 'bezi
+    dropbox_start_stop.Text = IIf(ret_shell = "Dropbox isn't running!", ("Start"), ("Stop"))
+    panel_dropbox.ToolTip = ret_shell
+  ENDIF 
+END
+
+
+PUBLIC SUB dropbox_start_stop_Click()
+  'spusteni shellu
+  SHELL Subst("dropbox &1", IIf(panel_dropbox.ToolTip = "Dropbox isn't running!", "start", "stop")) WAIT
+  nactiDropbox()
+END
+
+
+PUBLIC SUB dropbox_restart_Click()
+  SHELL "dropbox stop" WAIT
+  SHELL "dropbox start" WAIT
+  nactiDropbox()
+END
+
+
+PUBLIC SUB nactiApache()
+  DIM ret_shell AS String
+  IF panel_apache.Enabled THEN 
+    SHELL "/etc/init.d/apache2 status" WAIT TO ret_shell
+
+    IF ret_shell = "" THEN 
+      ret_shell = "Apache2 is NOT running.\n"
+    ENDIF 
+
+    apache_start_stop.Text = IIf(ret_shell = "Apache2 is NOT running.\n", ("Start"), ("Stop"))
+    panel_apache.ToolTip = ret_shell
+  ENDIF 
+END
+
+
+PUBLIC SUB apache_restart_Click()
+  SHELL "gksudo /etc/init.d/apache2 restart" WAIT 
+  nactiApache()
+END
+
+
+PUBLIC SUB apache_start_stop_Click()
+  'spusteni shellu
+  SHELL Subst("gksudo /etc/init.d/apache2 &1", IIf(panel_apache.ToolTip = "Apache2 is NOT running.\n", "start", "stop")) WAIT
+  nactiApache()
+END
+
+
+PRIVATE SUB Velikost(size AS Long) AS String
+  DIM $symbol AS String[] = [("bajtů"), ("kB"), ("MB"), ("GB"), ("TB"), ("PB"), ("EB"), ("ZB"), ("YB")]
+  DIM $exp, $conv AS Float
+
+  IF size > 0 THEN 
+    $exp = Fix(Log(size) / Log(1024)) 'floor
+    $conv = (size / (1024 ^ Fix($exp))) 'floor
+  ENDIF 
+
+  RETURN CString(IIf($exp = 0, Round($conv, 0), Round($conv, -2))) & " " & $symbol[$exp]
+END
+
+
+PUBLIC SUB nactiSit()
+  DIM active, prijato, odeslano, ret_shell AS String
+  DIM pole, pole2 AS String[]
+  SHELL "echo -n $( ip route | awk -W posix '/dev/ { print $3 }' | head -n 1 )" WAIT TO active
+  active = IIf(active, active, "lo")  'kdyz nebude zadna, pripoji loopback
+  sit_active.Text = Subst(("Síť: &1"), active)
+
+  'SHELL Subst("echo -n $( cat /proc/net/dev | sed 's/^ *//' | awk  -F':|[ \t]+' '/&1/ {print $2 }' )", active) WAIT TO prijato
+  SHELL Subst("echo -n $( cat /proc/net/dev | sed 's/^ *//'|awk  -F ': *|[ \t]+' '/&1/ {print $2 }' )", active) WAIT TO prijato
+  sit_prijato.Text = Velikost(CLong(prijato))
+  'SHELL Subst("echo -n $( cat /proc/net/dev | sed 's/^ *//' | awk  -F':|[ \t]+' '/&1/ {print $10 }' )", active) WAIT TO odeslano
+  SHELL Subst("echo -n $( cat /proc/net/dev | sed 's/^ *//'|awk  -F ': *|[ \t]+' '/&1/ { print $10 }' )", active) WAIT TO odeslano
+  sit_odeslano.Text = Velikost(CLong(odeslano))
+END
+
+
+PUBLIC SUB nactiTouchpad()
+  DIM ret_shell AS String
+  IF panel_touchpad.Enabled THEN 
+    SHELL "echo -n $( synclient -l | grep TouchpadOff | awk -F'= ' '{ print $2 }' )" WAIT TO ret_shell
+'osetreni chyby pri nespravne konfiguraci!!
+'http://www.linuxine.com/2008/06/how-to-disable-touchpad-in-ubuntu.html
+    touchpad_start_stop.Text = IIf(ret_shell = "0", ("zakazat"), ("povolit"))
+    panel_touchpad.ToolTip = ret_shell
+  ENDIF 
+END
+
+
+PUBLIC SUB touchpad_start_stop_Click()
+  SHELL Subst("synclient TouchpadOff=&1", IIf(panel_touchpad.ToolTip = "0", 1, 0))
+  nactiTouchpad()
+END
