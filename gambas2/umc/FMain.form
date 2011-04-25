@@ -169,6 +169,7 @@
   }
   { panel_xrandr Panel
     MoveScaled(64,1,20,17)
+    Enabled = False
     Border = Border.Etched
     { PictureBox12 PictureBox
       MoveScaled(6,4,6,6)
@@ -372,29 +373,34 @@
         Enabled = False
         Text = ("Skr\xC3\xBDt do li\xC5\xA1ty")
       }
-      { sit_prijato Label
-        MoveScaled(36,5,8,3)
-        ToolTip = ("Rychlost stahov\xC3\xA1n\xC3\xAD")
+      { HBox1 HBox
+        MoveScaled(32,5,26,3)
         AutoResize = True
-        Text = ("xx kX/s")
-      }
-      { sit_odeslano Label
-        MoveScaled(48,5,8,3)
-        ToolTip = ("Rychlost uploadu")
-        AutoResize = True
-        Text = ("xx kX/s")
-      }
-      { PictureBox13 PictureBox
-        MoveScaled(33,5.4286,2.2857,2.2857)
-        ToolTip = ("Rychlost stahov\xC3\xA1n\xC3\xAD")
-        Picture = Picture["ikony/downlink.png"]
-        Stretch = True
-      }
-      { PictureBox14 PictureBox
-        MoveScaled(45,5.4286,2.2857,2.2857)
-        ToolTip = ("Rychlost uploadu")
-        Picture = Picture["ikony/uplink.png"]
-        Stretch = True
+        Spacing = 5
+        { PictureBox13 PictureBox
+          MoveScaled(0,0,2.2857,2.2857)
+          ToolTip = ("Rychlost stahov\xC3\xA1n\xC3\xAD")
+          Picture = Picture["ikony/downlink.png"]
+          Stretch = True
+        }
+        { sit_prijato Label
+          MoveScaled(3,0,8,3)
+          ToolTip = ("Rychlost stahov\xC3\xA1n\xC3\xAD")
+          AutoResize = True
+          Text = ("xx kX/s")
+        }
+        { PictureBox14 PictureBox
+          MoveScaled(11,0,2.2857,2.2857)
+          ToolTip = ("Rychlost uploadu")
+          Picture = Picture["ikony/uplink.png"]
+          Stretch = True
+        }
+        { sit_odeslano Label
+          MoveScaled(14,0,8,3)
+          ToolTip = ("Rychlost uploadu")
+          AutoResize = True
+          Text = ("xx kX/s")
+        }
       }
     }
   }
