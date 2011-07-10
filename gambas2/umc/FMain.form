@@ -73,14 +73,12 @@
     }
     { profil ComboBox
       MoveScaled(12,12,28,3)
-      Enabled = False
       Text = ("")
       ReadOnly = True
       List = []
     }
     { Button5 Button
       MoveScaled(26,16,14,3)
-      Enabled = False
       Text = ("Ulo\xC5\xBEit")
     }
     { baterie_procento TextLabel
@@ -93,7 +91,6 @@
     }
     { Button6 Button
       MoveScaled(12,16,13,3)
-      Enabled = False
       Text = ("Na\xC4\x8D\xC3\xADst")
     }
     { Label9 Label
@@ -105,12 +102,11 @@
   { Panel6 Panel
     MoveScaled(1,19,41,21)
     Border = Border.Etched
-    { cpu ComboBox
+    { cpuselect ComboBox
       MoveScaled(2,16,23,3)
-      Enabled = False
       Text = ("")
       ReadOnly = True
-      List = [("Vysok\xC3\xBD v\xC3\xBDkon"), ("Podle popt\xC3\xA1vky"), ("N\xC3\xADzk\xC3\xA1 spot\xC5\x99eba")]
+      List = [("Konzervativn\xC4\x9B"), ("Podle popt\xC3\xA1vky"), ("Vysok\xC3\xBD v\xC3\xBDkon"), ("N\xC3\xADzk\xC3\xA1 spot\xC5\x99eba")]
     }
     { TextLabel1 TextLabel
       MoveScaled(1,1,39,3)
@@ -122,9 +118,8 @@
       MoveScaled(2,4,11,6)
       Picture = Picture["ikony/CPU.png"]
     }
-    { Button7 Button
+    { cpuset Button
       MoveScaled(26,16,14,3)
-      Enabled = False
       Text = ("Nastavit")
     }
     { cpu_typ Label
@@ -133,7 +128,7 @@
       Alignment = Align.Left
     }
     { cpu_frekcence Label
-      MoveScaled(12.8571,7,27,2.2857)
+      MoveScaled(13,7,27,2.2857)
       Text = ("Frekvence:")
       Alignment = Align.Left
     }

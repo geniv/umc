@@ -3,6 +3,7 @@
 CONST $cmd_dropbox AS String = "Dropbox isn't running!"
 CONST $cmd_apache2 AS String = "Apache2 is NOT running.\n"
 PRIVATE $shutdown AS Process
+PRIVATE $cpucount AS Integer
 
 PRIVATE tray AS TrayIcon
 
@@ -272,8 +273,10 @@ PRIVATE SUB nactiCpu()
   cpu_frekcence.Text = Subst(("Frekvence: &1 MHz"), ret_shell)
 
   SHELL "echo -n $( cat /proc/cpuinfo | awk -F': ' -W posix '/model name/ { print $2 }' | awk -F'@ ' '{ print $2 }' | wc -l )" TO ret_shell
-  'DEBUG ret_shell
+  $cpucount = ret_shell
   cpu_pocet.Text = Subst(("Počet jader: &1"), ret_shell)
+
+  cpuselect.Index = 1
 END
 
 'nacte informace z utility pro uptime
@@ -499,3 +502,25 @@ PUBLIC SUB Tray_MouseDown()
   trayclose()
 END
 
+
+PUBLIC SUB cpuset_Click()
+  DIM status AS String
+  DIM i AS Integer
+  
+  SELECT CASE cpuselect.Index
+    CASE 0
+      status = "conservative"
+    CASE 1
+      status = "ondemand"
+    CASE 2
+      status = "performance"
+    CASE 3
+      status = "powersave"
+   END SELECT 
+
+  'hromadne nastavovani vykonu
+  FOR i = 0 TO $cpucount - 1
+  DEBUG Subst("cpufreq-selector --cpu &1 --governor '&2'", i, status)
+    TRY SHELL Subst("cpufreq-selector --cpu &1 --governor '&2'", i, status) WAIT
+  NEXT 
+END
