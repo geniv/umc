@@ -3,7 +3,7 @@
 { Form Form
   MoveScaled(0,0,64,25)
   Text = ("")
-  { TextBox1 TextBox
+  { manager TextBox
     MoveScaled(1,6,24,3)
     Text = ("nautilus")
   }

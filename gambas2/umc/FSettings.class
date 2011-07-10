@@ -31,6 +31,7 @@ PUBLIC SUB Form_Close()
     Settings["settings/task" & index] = item
     INC index
   NEXT 
+  Settings["settings/manager"] = manager.Text
 
 END
 
@@ -44,6 +45,7 @@ PUBLIC SUB Form_Open()
     tasks.Add(Settings["settings/task" & i, ""])
   NEXT 
   rendertask()
+  manager.Text = Settings["settings/manager", "nautilus"]
 
 END
 

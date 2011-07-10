@@ -14,23 +14,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: FSettings.class:88
+#: FSettings.class:90
 msgid "nautilus"
 msgstr ""
 
-#: FSettings.class:97
+#: FSettings.class:99
 msgid "nova uloha"
 msgstr ""
 
-#: FSettings.class:103
+#: FSettings.class:105
 msgid "Ulohy po spusteni"
 msgstr ""
 
-#: FSettings.class:109
+#: FSettings.class:111
 msgid "Přidat ulohu"
 msgstr ""
 
-#: FSettings.class:126
+#: FSettings.class:128
 msgid "Souborový manažer:"
 msgstr ""
 

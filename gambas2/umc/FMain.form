@@ -367,7 +367,7 @@
         Text = ("xx:yy:zz")
         Alignment = Align.Center
       }
-      { Button11 Button
+      { trayhide Button
         MoveScaled(68,5,13,3)
         Text = ("Skr\xC3\xBDt do li\xC5\xA1ty")
       }
