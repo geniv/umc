@@ -8,7 +8,7 @@
     MoveScaled(1,1,20,17)
     Border = Border.Etched
     { obrazek_jas PictureBox
-      MoveScaled(2,4.8571,7,6)
+      MoveScaled(2,5,7,6)
     }
     { jas_slider Slider
       MoveScaled(3.2857,12,13.2857,3)
@@ -150,10 +150,8 @@
   { panel_touchpad Panel
     MoveScaled(43,1,20,17)
     Border = Border.Etched
-    { PictureBox7 PictureBox
+    { obrazek_touchpad PictureBox
       MoveScaled(7,4,6.8571,6.8571)
-      Picture = Picture["ikony/touchpad.png"]
-      Alignment = Align.Center
     }
     { Label5 Label
       MoveScaled(1,1,18,3)
@@ -171,13 +169,12 @@
     MoveScaled(64,1,20,17)
     Enabled = False
     Border = Border.Etched
-    { PictureBox12 PictureBox
-      MoveScaled(6,4,6,6)
-      Picture = Picture["icon:/large/home"]
+    { obrazek_manager PictureBox
+      MoveScaled(6,4,8,6.4286)
     }
     { manager_exec Button
       MoveScaled(2,12,16,3)
-      ToolTip = ("Otev\xC5\x99e okno s nastaven\xC3\xADm deformace obrazu")
+      ToolTip = ("Otev\xC5\x99e okno file manageru")
       Text = ("Spustit")
     }
     { Label16 Label

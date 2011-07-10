@@ -63,5 +63,3 @@ PRIVATE SUB rendertask()
     tasklist.Add(item)
   NEXT
 END
-
-

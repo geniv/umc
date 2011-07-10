@@ -11,6 +11,7 @@ PUBLIC SUB _new()
 
   obrazek_jas.Picture = Picture["ikony/jas.png"]
   obrazek_zvuk.Picture = Picture["ikony/sound.png"]
+  obrazek_manager.Picture = Picture["ikony/file_manager.png"]
 
   casovac.Enabled = TRUE
 
@@ -112,7 +113,7 @@ PUBLIC SUB Form_Open()
   'nacteni pozice, expanderu
   ME.X = Settings["win/x", 0]
   ME.Y = Settings["win/y", 0]
-  ostatni_expander.Hidden = Settings["custom/ostatni", FALSE]
+  ostatni_expander.Hidden = Settings["custom/expander", FALSE]
   'DEBUG ostatni_expander.Hidden
   IF ostatni_expander.Hidden THEN 
     ostatni_expander_Hide()
@@ -132,14 +133,9 @@ PUBLIC SUB Form_Open()
 
   shutdown_hour.Text = Hour(Now) + 1
   shutdown_minute.Text = Minute(Now)
-  
-'  TrayIcon1.Visible = FALSE
 
-'opravneni poresit pres skupiny!!! opravneni!! jen do urcitych slozek
-'SHELL "id" TO ret_shell
-'PRINT ret_shell
+  'TODO dat spoustet ulohy po spusteni! - ktere jsou nastavene v nastaveni
 
-'DEBUG ME.ScreenX;; ME.ScreenY
 END
 
 PUBLIC SUB Form_Close()
@@ -147,10 +143,10 @@ PUBLIC SUB Form_Close()
   Settings["win/x"] = ME.ScreenX - 1
   Settings["win/y"] = ME.ScreenY - 27
   'DEBUG ostatni_expander.Hidden
-  Settings["custom/ostatni"] = ostatni_expander.Hidden
+  Settings["custom/expander"] = ostatni_expander.Hidden
+  Settings.Save()
 
   trayclose()
-'DEBUG ME.ScreenX;; ME.ScreenY
 END
 
 'schovani ostatnich polozek
@@ -342,31 +338,6 @@ PUBLIC SUB casovac_Timer()
 END
 
 
-' PUBLIC SUB Form_KeyPress()
-'   IF Key.Control AND Key.Code = 87 THEN 
-'     ME.Hide()
-'     tray_icon.Visible = TRUE
-'     'TrayIcon1.Show()
-'     
-'   ENDIF
-'   'ME.Hide()
-' PRINT Key.Code
-' END
-' 
-' PUBLIC SUB tray_icon_MouseDown()
-' 
-'   IF Mouse.Button = 1 THEN
-'     ME.Show()
-'     tray_icon.Visible = FALSE
-'     'TrayIcon1.Hide()
-' 
-'     'TrayIcon
-'   ENDIF 
-' 'PRINT Mouse.Button
-' 
-' END
-
-
 PUBLIC SUB nactiDropbox()
   DIM ret_shell AS String
   IF panel_dropbox.Enabled THEN 
@@ -463,6 +434,7 @@ PUBLIC SUB nactiTouchpad()
     touchpad_start_stop.Text = IIf(ret_shell = "0", ("zakazat"), ("povolit"))
     panel_touchpad.Tag = ret_shell
     panel_touchpad.ToolTip = IIf(panel_touchpad.Tag = "0", ("Zapnuto"), ("Vypnuto"))
+    obrazek_touchpad.Picture = IIf(panel_touchpad.Tag = "0", Picture["ikony/touchpad-enable-icon.png"], Picture["ikony/touchpad-disable-icon.png"])
   ENDIF 
 END
 
@@ -472,25 +444,11 @@ PUBLIC SUB touchpad_start_stop_Click()
   nactiTouchpad()
 END
 
+
 PUBLIC SUB nastaveni_button_Click()
-
   FSettings.ShowModal()
-
 END
 
-' PUBLIC SUB Button11_Click()
-' 
-'   TrayIcon1.Visible = TRUE
-'   ME.Hide
-' 
-' END
-' 
-' PUBLIC SUB TrayIcon1_MouseDown()
-' 
-'   TrayIcon1.Visible = FALSE
-'   ME.Show
-' 
-' END
 
 PUBLIC SUB shutdown_start_Click()
 
@@ -498,10 +456,10 @@ PUBLIC SUB shutdown_start_Click()
   $shutdown = SHELL Subst("sudo shutdown -&1 &2:&3 &", IIf(shutdown_restart.Value, "r", "h"), shutdown_hour.Text, shutdown_minute.Text) WAIT 
 
 'TODO poradne posefovat!! informovat, overovat v casovaci state
-PRINT $shutdown.Id + 1
-SHELL "ps -A | grep shutdown"
-SHELL Subst("cat /proc/&1/cmdline", $shutdown.Id + 1)
-'cat /proc/7783/cmdline
+  PRINT $shutdown.Id + 1
+  SHELL "ps -A | grep shutdown"
+  SHELL Subst("cat /proc/&1/cmdline", $shutdown.Id + 1)
+  'cat /proc/7783/cmdline
 
 END
 
@@ -514,16 +472,19 @@ PUBLIC SUB manager_exec_Click()
   TRY SHELL Subst("&1 &", Settings["settings/manager", ""])
 END
 
+
 PUBLIC SUB trayhide_Click()
   DIM obr AS Picture
   tray = NEW TrayIcon AS "Tray"
-  obr = Picture["icon:/small/system"]
-  obr.Transparent = TRUE
+  obr = Picture["ikony/tray.png"]
+  'obr.Resize(24, 24)
+  'obr.Transparent = TRUE
   tray.Picture = obr
 
   tray.Visible = TRUE
   ME.Hide()
 END
+
 
 PUBLIC SUB trayclose()
   IF tray <> NULL THEN
@@ -533,10 +494,8 @@ PUBLIC SUB trayclose()
 END
 
 
-
 PUBLIC SUB Tray_MouseDown()
-  
   ME.Show()
   trayclose()
-  
 END
+
