@@ -18,294 +18,330 @@ msgstr ""
 msgid "fork programu Windows Mobile Centrum"
 msgstr ""
 
-#: FMain.class:14
+#: FMain.class:18
 msgid "Program již beží (&1x) a proto bude ukončen."
 msgstr ""
 
-#: FMain.class:198
+#: FMain.class:213
 msgid "Baterie: &1%"
 msgstr ""
 
-#: FMain.class:221
+#: FMain.class:236
 msgid "Plně nabito"
 msgstr ""
 
-#: FMain.class:226
+#: FMain.class:241
 msgid "Nabijení (odhad): &1"
 msgstr ""
 
-#: FMain.class:235
+#: FMain.class:250
 msgid "Zbývající čas (odhad): &1"
 msgstr ""
 
-#: FMain.class:247
+#: FMain.class:262
 msgid "Typ: &1"
 msgstr ""
 
-#: FMain.class:253
+#: FMain.class:268
 msgid "Frekvence: &1 MHz"
 msgstr ""
 
-#: FMain.class:257
+#: FMain.class:272
 msgid "Počet jader: &1"
 msgstr ""
 
-#: FMain.class:355
+#: FMain.class:370
 msgid "Start"
 msgstr ""
 
-#: FMain.class:355
+#: FMain.class:370
 msgid "Stop"
 msgstr ""
 
-#: FMain.class:404
-msgid "bajtů"
+#: FMain.class:372
+msgid "Dropbox neběží"
 msgstr ""
 
-#: FMain.class:404
-msgid "kB"
+#: FMain.class:372
+msgid "Dropbox běží"
 msgstr ""
 
-#: FMain.class:404
-msgid "MB"
+#: FMain.class:402
+msgid "Apache2 neběží"
 msgstr ""
 
-#: FMain.class:404
-msgid "GB"
-msgstr ""
-
-#: FMain.class:404
-msgid "TB"
-msgstr ""
-
-#: FMain.class:404
-msgid "PB"
-msgstr ""
-
-#: FMain.class:404
-msgid "EB"
-msgstr ""
-
-#: FMain.class:404
-msgid "ZB"
-msgstr ""
-
-#: FMain.class:404
-msgid "YB"
+#: FMain.class:402
+msgid "Apache2 beží"
 msgstr ""
 
 #: FMain.class:421
+msgid "bajtů"
+msgstr ""
+
+#: FMain.class:421
+msgid "kB"
+msgstr ""
+
+#: FMain.class:421
+msgid "MB"
+msgstr ""
+
+#: FMain.class:421
+msgid "GB"
+msgstr ""
+
+#: FMain.class:421
+msgid "TB"
+msgstr ""
+
+#: FMain.class:421
+msgid "PB"
+msgstr ""
+
+#: FMain.class:421
+msgid "EB"
+msgstr ""
+
+#: FMain.class:421
+msgid "ZB"
+msgstr ""
+
+#: FMain.class:421
+msgid "YB"
+msgstr ""
+
+#: FMain.class:438
 msgid "Síť: &1"
 msgstr ""
 
-#: FMain.class:438
+#: FMain.class:455
 msgid "zakazat"
 msgstr ""
 
-#: FMain.class:438
+#: FMain.class:455
 msgid "povolit"
 msgstr ""
 
-#: FMain.class:563
+#: FMain.class:457
+msgid "Zapnuto"
+msgstr ""
+
+#: FMain.class:457
+msgid "Vypnuto"
+msgstr ""
+
+#: FMain.class:621
 msgid "Jas"
 msgstr ""
 
-#: FMain.class:570
+#: FMain.class:628
 msgid "50%"
 msgstr ""
 
-#: FMain.class:576
+#: FMain.class:634
 msgid "+"
 msgstr ""
 
-#: FMain.class:581
+#: FMain.class:639
 msgid "-"
 msgstr ""
 
-#: FMain.class:604
+#: FMain.class:662
 msgid "Hlasitost"
 msgstr ""
 
-#: FMain.class:610
+#: FMain.class:668
 msgid "Ztišit"
 msgstr ""
 
-#: FMain.class:635
+#: FMain.class:693
 msgid "Uložit"
 msgstr ""
 
-#: FMain.class:640
+#: FMain.class:698
 msgid "Baterie: xx%"
 msgstr ""
 
-#: FMain.class:645
+#: FMain.class:703
 msgid "Zbývající čas (odhad): xx:yy:zz"
 msgstr ""
 
-#: FMain.class:651
+#: FMain.class:709
 msgid "Načíst"
 msgstr ""
 
-#: FMain.class:657
+#: FMain.class:715
 msgid "Profil:"
 msgstr ""
 
-#: FMain.class:670
+#: FMain.class:728
 msgid "Vysoký výkon"
 msgstr ""
 
-#: FMain.class:670
+#: FMain.class:728
 msgid "Podle poptávky"
 msgstr ""
 
-#: FMain.class:670
+#: FMain.class:728
 msgid "Nízká spotřeba"
 msgstr ""
 
-#: FMain.class:676
+#: FMain.class:734
 msgid "CPU:"
 msgstr ""
 
-#: FMain.class:688
+#: FMain.class:746
 msgid "Nastavit"
 msgstr ""
 
-#: FMain.class:693
+#: FMain.class:751
 msgid "Typ:"
 msgstr ""
 
-#: FMain.class:699
+#: FMain.class:757
 msgid "Frekvence:"
 msgstr ""
 
-#: FMain.class:705
+#: FMain.class:763
 msgid "Počet jader:"
 msgstr ""
 
-#: FMain.class:711
+#: FMain.class:769
 msgid "Řízení výkonu:"
 msgstr ""
 
-#: FMain.class:728
+#: FMain.class:786
 msgid "Touchpad"
 msgstr ""
 
-#: FMain.class:734
+#: FMain.class:792
 msgid "Otevře okno s nastavením deformace obrazu"
 msgstr ""
 
-#: FMain.class:735
+#: FMain.class:793
 msgid "Start / Stop"
 msgstr ""
 
-#: FMain.class:752
+#: FMain.class:810
 msgid "Upravit"
 msgstr ""
 
-#: FMain.class:758
+#: FMain.class:816
 msgid "Rotace a jiné"
 msgstr ""
 
-#: FMain.class:769
+#: FMain.class:827
 msgid "Zobrazit/Skrýt další možnosti"
 msgstr ""
 
-#: FMain.class:770
+#: FMain.class:828
 msgid "Ostatní"
 msgstr ""
 
-#: FMain.class:781
+#: FMain.class:839
 msgid "Restart"
 msgstr ""
 
-#: FMain.class:787
+#: FMain.class:845
 msgid "Dropbox"
 msgstr ""
 
-#: FMain.class:811
+#: FMain.class:869
 msgid "Časové vypnutí"
 msgstr ""
 
-#: FMain.class:818
+#: FMain.class:876
 msgid "xx"
 msgstr ""
 
-#: FMain.class:824
+#: FMain.class:882
 msgid "v (hodin:minunt):"
 msgstr ""
 
-#: FMain.class:837
+#: FMain.class:895
 msgid ":"
 msgstr ""
 
-#: FMain.class:844
+#: FMain.class:902
 msgid "OK"
 msgstr ""
 
-#: FMain.class:850
+#: FMain.class:908
 msgid "Zrušit"
 msgstr ""
 
-#: FMain.class:861
+#: FMain.class:919
 msgid "Restart?"
 msgstr ""
 
-#: FMain.class:878
+#: FMain.class:936
 msgid "Testovat"
 msgstr ""
 
-#: FMain.class:884
+#: FMain.class:942
 msgid "Test Webkamery"
 msgstr ""
 
-#: FMain.class:891
+#: FMain.class:949
 msgid "Obráceně"
 msgstr ""
 
-#: FMain.class:897
+#: FMain.class:955
 msgid "Zrcadlově"
 msgstr ""
 
-#: FMain.class:920
+#: FMain.class:978
 msgid "Apache server"
 msgstr ""
 
-#: FMain.class:948
+#: FMain.class:1006
 msgid "Doba běhu systému:"
 msgstr ""
 
-#: FMain.class:967
+#: FMain.class:1024
 msgid "Nastavení"
 msgstr ""
 
-#: FMain.class:973
+#: FMain.class:1030
 msgid "Síť:"
 msgstr ""
 
-#: FMain.class:978
+#: FMain.class:1035
 msgid "xx:yy:zz"
 msgstr ""
 
-#: FMain.class:985
+#: FMain.class:1041
 msgid "Skrýt do lišty"
 msgstr ""
 
-#: FMain.class:995
+#: FMain.class:1051
 msgid "Rychlost stahování"
 msgstr ""
 
-#: FMain.class:1004
+#: FMain.class:1060
 msgid "xx kX/s"
 msgstr ""
 
-#: FMain.class:1009
+#: FMain.class:1065
 msgid "Rychlost uploadu"
 msgstr ""
 
-#: FSettings.class:19
+#: FSettings.class:88
 msgid "nautilus"
 msgstr ""
 
-#: FSettings.class:24
-msgid "uložit"
+#: FSettings.class:97
+msgid "nova uloha"
+msgstr ""
+
+#: FSettings.class:103
+msgid "Ulohy po spusteni"
+msgstr ""
+
+#: FSettings.class:109
+msgid "Přidat ulohu"
+msgstr ""
+
+#: FSettings.class:126
+msgid "Souborový manažer:"
 msgstr ""

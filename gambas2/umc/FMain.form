@@ -230,7 +230,7 @@
           Text = ("\xC4\x8Casov\xC3\xA9 vypnut\xC3\xAD")
           Alignment = Align.Center
         }
-        { TextBox1 TextBox
+        { shutdown_hour TextBox
           MoveScaled(4,16,4.2857,3)
           Font = Font["9"]
           Text = ("xx")
@@ -241,7 +241,7 @@
           Text = ("v (hodin:minunt):")
           Alignment = Align.Center
         }
-        { TextBox2 TextBox
+        { shutdown_minute TextBox
           MoveScaled(11,16,4.2857,3)
           Font = Font["9"]
           Text = ("xx")
@@ -252,12 +252,12 @@
           Text = (":")
           Alignment = Align.Center
         }
-        { Button12 Button
+        { shutdown_start Button
           MoveScaled(2,20,7,3)
           Font = Font["9"]
           Text = ("OK")
         }
-        { Button13 Button
+        { shutdown_kill Button
           MoveScaled(10,20,7,3)
           Font = Font["9"]
           Text = ("Zru\xC5\xA1it")
@@ -266,7 +266,7 @@
           MoveScaled(8,4,4,4)
           Picture = Picture["ikony/system_log_out.png"]
         }
-        { CheckBox5 CheckBox
+        { shutdown_restart CheckBox
           MoveScaled(1,9,18,3)
           Font = Font["9"]
           Text = ("Restart?")
@@ -353,9 +353,8 @@
       { Separator2 Separator
         MoveScaled(59,1,1,7)
       }
-      { Button10 Button
+      { nastaveni_button Button
         MoveScaled(71,1,10,3)
-        Enabled = False
         Text = ("Nastaven\xC3\xAD")
       }
       { sit_active Label
@@ -370,13 +369,12 @@
       }
       { Button11 Button
         MoveScaled(68,5,13,3)
-        Enabled = False
         Text = ("Skr\xC3\xBDt do li\xC5\xA1ty")
       }
       { HBox1 HBox
-        MoveScaled(32,5,26,3)
+        MoveScaled(32,5,27,3)
         AutoResize = True
-        Spacing = 5
+        Spacing = 3
         { PictureBox13 PictureBox
           MoveScaled(0,0,2.2857,2.2857)
           ToolTip = ("Rychlost stahov\xC3\xA1n\xC3\xAD")
