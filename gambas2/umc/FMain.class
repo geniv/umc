@@ -4,6 +4,7 @@ CONST $cmd_dropbox AS String = "Dropbox isn't running!"
 CONST $cmd_apache2 AS String = "Apache2 is NOT running.\n"
 PRIVATE $shutdown AS Process
 PRIVATE $cpucount AS Integer
+PRIVATE $profiles AS NEW String[]
 
 PRIVATE tray AS TrayIcon
 
@@ -135,6 +136,9 @@ PUBLIC SUB Form_Open()
   shutdown_hour.Text = Hour(Now) + 1
   shutdown_minute.Text = Minute(Now)
 
+  loadprofile()
+  profileselect.Index = Settings["custom/profileindex", 0]
+
   'TODO dat spoustet ulohy po spusteni! - ktere jsou nastavene v nastaveni
 
 END
@@ -145,8 +149,9 @@ PUBLIC SUB Form_Close()
   Settings["win/y"] = ME.ScreenY - 27
   'DEBUG ostatni_expander.Hidden
   Settings["custom/expander"] = ostatni_expander.Hidden
+  saveprofile()
+  Settings["custom/profileindex"] = profileselect.Index
   Settings.Save()
-
   trayclose()
 END
 
@@ -524,3 +529,44 @@ PUBLIC SUB cpuset_Click()
     TRY SHELL Subst("cpufreq-selector --cpu &1 --governor '&2'", i, status) WAIT
   NEXT 
 END
+
+
+PUBLIC SUB profilesave_Click()
+  DIM nazev AS String
+  nazev = InputBox(("zadej název profilu"), ("Bateri pofil"), ("Název"))
+  IF nazev THEN 
+    $profiles.Add(nazev)
+    renderprofile()
+  ENDIF 
+END
+
+PRIVATE SUB renderprofile() 
+  DIM item AS String
+  profileselect.Clear
+  FOR EACH item IN $profiles
+    profileselect.Add(item)
+  NEXT
+END
+
+PRIVATE SUB loadprofile()
+  DIM count, i AS Integer
+  $profiles.Clear
+  count = Settings["custom/profilecount", 0]
+  FOR i = 0 TO count - 1
+    $profiles.Add(Settings["custom/profile" & i, ""])
+  NEXT 
+  renderprofile()
+END
+
+
+PRIVATE SUB saveprofile()
+  DIM item AS String
+  DIM index AS Integer
+  'ulozeni task
+  Settings["custom/profilecount"] = $profiles.length
+  FOR EACH item IN $profiles
+    Settings["custom/profile" & index] = item
+    INC index
+  NEXT 
+END
+

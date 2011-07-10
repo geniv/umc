@@ -1,13 +1,15 @@
 ' Gambas class file
 
-tasks AS NEW String[]
+PRIVATE $tasks AS NEW String[]
 
 PUBLIC SUB taskconfirm_Click()
-  tasks.add(taskinput.Text)
-  tasklist.Add(taskinput.Text)
-  taskinput.Clear
-  taskframe.Visible = FALSE
-  tasknew.Enabled = TRUE
+  IF taskinput.Text THEN 
+    $tasks.add(taskinput.Text)
+    rendertask()
+    taskinput.Clear
+    taskframe.Visible = FALSE
+    tasknew.Enabled = TRUE
+  ENDIF 
 END
 
 PUBLIC SUB Form_MouseDown()
@@ -20,46 +22,59 @@ END
 PUBLIC SUB tasknew_Click()
   taskframe.Visible = TRUE
   tasknew.Enabled = FALSE
+  taskinput.SetFocus()
+END
+
+
+PUBLIC SUB Form_Open()
+  loadtask()
+  manager.Text = Settings["settings/manager", "nautilus"]
 END
 
 PUBLIC SUB Form_Close()
-  DIM item AS String
-  DIM index AS Integer
-  'ulozeni task
-  Settings["settings/taskcount"] = tasks.length
-  FOR EACH item IN tasks
-    Settings["settings/task" & index] = item
-    INC index
-  NEXT 
+  savetask()
   Settings["settings/manager"] = manager.Text
-
 END
 
-PUBLIC SUB Form_Open()
-  DIM count, i AS Integer
-
-  tasklist.Clear
-  tasks.Clear
-  count = Settings["settings/taskcount", 0]
-  FOR i = 0 TO count - 1
-    tasks.Add(Settings["settings/task" & i, ""])
-  NEXT 
-  rendertask()
-  manager.Text = Settings["settings/manager", "nautilus"]
-
-END
 
 PUBLIC SUB tasklist_KeyPress()
-  IF tasklist.Index > -1 AND Key.Delete AND Message.Delete("Opravdu smazat tuto ulohu?", "Ano", "Ne") = 1 THEN 
-    tasks.Delete(tasklist.Index)
-    rendertask()
+  IF tasklist.Index > -1 THEN 
+    IF Key.Delete AND Message.Delete(Subst(("Opravdu smazat tuto ulohu: '&1' ?"), $tasks[tasklist.Index]), ("Ano"), ("Ne")) = 1 THEN 
+      $tasks.Delete(tasklist.Index)
+      rendertask()
+    ENDIF 
   ENDIF 
 END
+
 
 PRIVATE SUB rendertask()
   DIM item AS String
   tasklist.Clear
-  FOR EACH item IN tasks
+  FOR EACH item IN $tasks
     tasklist.Add(item)
   NEXT
 END
+
+
+PRIVATE SUB savetask()
+  DIM item AS String
+  DIM index AS Integer
+  'ulozeni task
+  Settings["settings/taskcount"] = $tasks.length
+  FOR EACH item IN $tasks
+    Settings["settings/task" & index] = item
+    INC index
+  NEXT 
+END
+
+
+PRIVATE SUB loadtask()
+  DIM count, i AS Integer
+  $tasks.Clear
+  count = Settings["settings/taskcount", 0]
+  FOR i = 0 TO count - 1
+    $tasks.Add(Settings["settings/task" & i, ""])
+  NEXT 
+  rendertask()
+END
+

@@ -3,7 +3,7 @@
 Title=Ubuntu Mobile Center
 Startup=FMain
 Icon=ikony/aplikace.png
-Version=0.0.80
+Version=0.0.81
 Library=gb.qt
 Library=gb.form
 Library=gb.settings

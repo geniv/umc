@@ -71,13 +71,13 @@
       Picture = Picture["ikony/baterka/40.png"]
       Stretch = True
     }
-    { profil ComboBox
+    { profileselect ComboBox
       MoveScaled(12,12,28,3)
       Text = ("")
       ReadOnly = True
       List = []
     }
-    { Button5 Button
+    { profilesave Button
       MoveScaled(26,16,14,3)
       Text = ("Ulo\xC5\xBEit")
     }
@@ -89,7 +89,7 @@
       MoveScaled(12,4,28,3)
       Text = ("Zb\xC3\xBDvaj\xC3\xADc\xC3\xAD \xC4\x8Das (odhad): xx:yy:zz")
     }
-    { Button6 Button
+    { profileload Button
       MoveScaled(12,16,13,3)
       Text = ("Na\xC4\x8D\xC3\xADst")
     }
