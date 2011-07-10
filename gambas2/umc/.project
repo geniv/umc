@@ -1,5 +1,5 @@
 # Gambas Project File 2.0
-# Compiled with Gambas 2.22.0
+# Compiled with Gambas 2.21.0
 Title=Ubuntu Mobile Center
 Startup=FMain
 Icon=ikony/aplikace.png
