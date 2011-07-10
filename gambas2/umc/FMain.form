@@ -167,23 +167,23 @@
       Text = ("Start / Stop")
     }
   }
-  { panel_xrandr Panel
+  { panel_manager Panel
     MoveScaled(64,1,20,17)
     Enabled = False
     Border = Border.Etched
     { PictureBox12 PictureBox
       MoveScaled(6,4,6,6)
-      Picture = Picture["ikony/hp_monitor.png"]
+      Picture = Picture["icon:/large/home"]
     }
-    { Button1 Button
+    { manager_exec Button
       MoveScaled(2,12,16,3)
       ToolTip = ("Otev\xC5\x99e okno s nastaven\xC3\xADm deformace obrazu")
-      Text = ("Upravit")
+      Text = ("Spustit")
     }
     { Label16 Label
       MoveScaled(1,1,18,3)
       Font = Font["Bold,+1"]
-      Text = ("Rotace a jin\xC3\xA9")
+      Text = ("File manager")
       Alignment = Align.Center
     }
   }

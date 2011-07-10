@@ -29,7 +29,7 @@ PUBLIC SUB _new()
   panel_jas.Enabled = existJas()
   panel_hlasitost.Enabled = existHlasitost()
   panel_touchpad.Enabled = existTouchepad()
-  'panel_xrandr.Enabled = existXrandr()
+  panel_manager.Enabled = existManager()
   panel_acpi.Enabled = existAcpi()
   panel_webcam.Enabled = existWebcam()
   panel_apache.Enabled = existApache()
@@ -68,10 +68,10 @@ PRIVATE SUB existTouchepad() AS Boolean
   RETURN ret_shell
 END
 
-PRIVATE SUB existXrandr() AS Boolean
-  DIM ret_shell AS String
-  TRY SHELL "which xrandr" WAIT TO ret_shell
-  RETURN ret_shell
+PRIVATE SUB existManager() AS Boolean
+  DIM ret AS String
+  ret = Settings["settings/manager", ""]
+  RETURN IIf(ret, TRUE, FALSE)
 END
 
 PRIVATE SUB existAcpi() AS Boolean
@@ -506,10 +506,12 @@ SHELL Subst("cat /proc/&1/cmdline", $shutdown.Id + 1)
 END
 
 PUBLIC SUB shutdown_kill_Click()
-
   SHELL "gksudo killall shutdown" WAIT 
   SHELL "gksudo killall shutdown" WAIT 
+END
 
+PUBLIC SUB manager_exec_Click()
+  TRY SHELL Subst("&1 &", Settings["settings/manager", ""])
 END
 
 PUBLIC SUB trayhide_Click()
