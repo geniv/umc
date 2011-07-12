@@ -6,6 +6,9 @@ PRIVATE $shutdown AS Process
 PRIVATE $cpucount AS Integer
 PRIVATE $profiles AS NEW String[]
 
+'pole governor pro cpu
+PRIVATE governor AS String[] = ["conservative", "ondemand", "performance", "powersave"]
+
 PRIVATE tray AS TrayIcon
 
 PUBLIC SUB _new()
@@ -265,6 +268,7 @@ PRIVATE SUB nactiBaterii()
   ENDIF 
 END
 
+
 'nacte informace z utility pro cpu
 PRIVATE SUB nactiCpu()
   DIM ret_shell AS String
@@ -283,7 +287,9 @@ PRIVATE SUB nactiCpu()
   $cpucount = ret_shell
   cpu_pocet.Text = Subst(("Počet jader: &1"), ret_shell)
 
-  cpuselect.Index = 1
+''conservative ondemand userspace powersave performance
+  SHELL "echo -n $( cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor )" TO ret_shell
+  cpuselect.Index = governor.Find(ret_shell)  'nacteni aktualiho indexu governor
 END
 
 'nacte informace z utility pro uptime
@@ -491,12 +497,22 @@ END
 PUBLIC SUB trayhide_Click()
   DIM obr AS Picture
   tray = NEW TrayIcon AS "Tray"
-  obr = Picture["ikony/tray.png"]
-  'obr.Resize(24, 24)
-  obr.Transparent = TRUE
-  tray.Picture = obr
+  'obr = Picture["ikony/tray.png"]
+  'obr.Transparent = TRUE
+  
+  'tray.Picture = obr
+  'tray.Picture = NEW Picture(24, 24, TRUE)
+  'tray.Picture.Load("ikony/tray.png")
+  'ray.Icon = NEW Picture(24, 24, TRUE)
+  'tray.Icon = Picture["ikony/tray.png"]
+  tray.Picture = Picture["ikony/tray.png"]
   tray.Picture.Transparent = TRUE
-  tray.Tooltip = Subst(("Jas: &1\n&2\n&3\n&4"), jas_stav.Text, baterie_procento.Text, baterie_cas.Text, uptime_cas.Text)
+  'tray.Picture = Picture["ikony/tray.png"]
+  'tray.Icon.Load("ikony/tray.png")
+  'tray.Picture.Transparent = TRUE
+  'tray.Picture = obr
+
+  'tray.Tooltip = Subst(("Jas: &1\n&2\n&3\n&4"), jas_stav.Text, baterie_procento.Text, baterie_cas.Text, uptime_cas.Text)
 
   tray.Visible = TRUE
   ME.Hide()
@@ -520,18 +536,7 @@ END
 PUBLIC SUB cpuset_Click()
   DIM status AS String
   DIM i AS Integer
-  
-  SELECT CASE cpuselect.Index
-    CASE 0
-      status = "conservative"
-    CASE 1
-      status = "ondemand"
-    CASE 2
-      status = "performance"
-    CASE 3
-      status = "powersave"
-   END SELECT 
-
+  status = governor[cpuselect.Index]
   'hromadne nastavovani vykonu
   FOR i = 0 TO $cpucount - 1
   DEBUG Subst("cpufreq-selector --cpu &1 --governor '&2'", i, status)
