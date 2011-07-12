@@ -141,6 +141,8 @@ PUBLIC SUB Form_Open()
 
   'TODO dat spoustet ulohy po spusteni! - ktere jsou nastavene v nastaveni
 
+'TODO do tray pridat tooltip se strucnyma informacema
+'TODO pri spusteni zjistovat stav govermentu cpu
 END
 
 PUBLIC SUB Form_Close()
@@ -343,6 +345,11 @@ PUBLIC SUB casovac_Timer()
     'casovac, shutdown
   ENDIF
   nactiSit()
+
+  'obnovovani informaci v tray
+  IF tray <> NULL THEN 
+    tray.Tooltip = Subst(("Jas: &1\n&2\n&3\n&4"), jas_stav.Text, baterie_procento.Text, baterie_cas.Text, uptime_cas.Text)
+  ENDIF 
 END
 
 
@@ -486,8 +493,10 @@ PUBLIC SUB trayhide_Click()
   tray = NEW TrayIcon AS "Tray"
   obr = Picture["ikony/tray.png"]
   'obr.Resize(24, 24)
-  'obr.Transparent = TRUE
+  obr.Transparent = TRUE
   tray.Picture = obr
+  tray.Picture.Transparent = TRUE
+  tray.Tooltip = Subst(("Jas: &1\n&2\n&3\n&4"), jas_stav.Text, baterie_procento.Text, baterie_cas.Text, uptime_cas.Text)
 
   tray.Visible = TRUE
   ME.Hide()

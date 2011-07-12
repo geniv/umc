@@ -73,8 +73,8 @@ SearchString=True
 
 [OpenFile]
 File[1]="FMain.form"
-Active=1
-File[2]="FMain.class:49.0"
+File[2]="FMain.class:144.48"
+Active=2
 File[3]="mobility_center_prikazy:117.29"
 File[4]="FSettings.form"
 File[5]="FSettings.class:80.0"
