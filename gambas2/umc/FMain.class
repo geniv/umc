@@ -178,6 +178,7 @@ END
 'fyzicke nastavovani mute hlasitosti
 PRIVATE SUB nastavMuteHlasitost()
   SHELL Subst("amixer sset Master &1 > /dev/null", IIf(hlasitost_ztisit.Value, "off", "on"))
+  nactiObrazekHlasitosti()
 END
 
 'nastaveni pri zmene hodnoty hlasitosti
@@ -212,7 +213,13 @@ PRIVATE SUB nactiHlasitost()
   SHELL Subst("echo -n $( amixer sget Master | awk -F': ' -W posix '/&1:/ { print $2 }' | awk '{ print $5 }' )", kanal) TO ret_shell
   'DEBUG ret_shell
   hlasitost_ztisit.Value = IIf(ret_shell = "[on]", FALSE, TRUE)
+  nactiObrazekHlasitosti()
 END
+
+PRIVATE SUB nactiObrazekHlasitosti()
+  obrazek_zvuk.Picture = IIf(NOT hlasitost_ztisit.Value, Picture["ikony/sound.png"], Picture["ikony/sound_mute.png"])
+END
+
 
 'nacte informace z utility pro baterii
 PRIVATE SUB nactiBaterii()
@@ -524,8 +531,10 @@ END
 
 
 PUBLIC SUB Tray_MouseDown()
-  ME.Show()
-  trayclose()
+  IF Mouse.Left THEN 
+    ME.Show()
+    trayclose()
+  ENDIF 
 END
 
 
