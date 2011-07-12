@@ -40,6 +40,9 @@ Geometry=[0,0,301,301]
 [DebugWindow/Stat(ret_shell).Perm]
 Geometry=[14,14,301,301]
 
+[DebugWindow/governor]
+Geometry=[0,0,301,301]
+
 [DebugWindow/hlasitost_slider]
 Geometry=[0,0,301,301]
 
@@ -73,9 +76,9 @@ SearchString=True
 
 [OpenFile]
 File[1]="FMain.form"
-File[2]="FMain.class:502.33"
+File[2]="FMain.class:288.0"
 Active=2
-File[3]="mobility_center_prikazy:117.29"
+File[3]="mobility_center_prikazy:113.15"
 File[4]="FSettings.form"
 File[5]="FSettings.class:80.0"
 Count=5

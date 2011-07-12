@@ -144,8 +144,6 @@ PUBLIC SUB Form_Open()
 
   'TODO dat spoustet ulohy po spusteni! - ktere jsou nastavene v nastaveni
 
-'TODO do tray pridat tooltip se strucnyma informacema
-'TODO pri spusteni zjistovat stav govermentu cpu
 END
 
 PUBLIC SUB Form_Close()
@@ -354,7 +352,7 @@ PUBLIC SUB casovac_Timer()
 
   'obnovovani informaci v tray
   IF tray <> NULL THEN 
-    tray.Tooltip = Subst(("Jas: &1\n&2\n&3\n&4"), jas_stav.Text, baterie_procento.Text, baterie_cas.Text, uptime_cas.Text)
+    tray.Tooltip = Subst(("Jas: &1\n&2\n&3\n&4\n&5"), jas_stav.Text, baterie_procento.Text, baterie_cas.Text, uptime_cas.Text, cpuselect.Text)
   ENDIF 
 END
 
@@ -494,28 +492,26 @@ PUBLIC SUB manager_exec_Click()
 END
 
 
+
 PUBLIC SUB trayhide_Click()
   DIM obr AS Picture
+  DIM ptray AS TrayIcon
+
   tray = NEW TrayIcon AS "Tray"
-  'obr = Picture["ikony/tray.png"]
-  'obr.Transparent = TRUE
-  
-  'tray.Picture = obr
-  'tray.Picture = NEW Picture(24, 24, TRUE)
-  'tray.Picture.Load("ikony/tray.png")
-  'ray.Icon = NEW Picture(24, 24, TRUE)
-  'tray.Icon = Picture["ikony/tray.png"]
   tray.Picture = Picture["ikony/tray.png"]
   tray.Picture.Transparent = TRUE
-  'tray.Picture = Picture["ikony/tray.png"]
-  'tray.Icon.Load("ikony/tray.png")
-  'tray.Picture.Transparent = TRUE
-  'tray.Picture = obr
-
-  'tray.Tooltip = Subst(("Jas: &1\n&2\n&3\n&4"), jas_stav.Text, baterie_procento.Text, baterie_cas.Text, uptime_cas.Text)
-
   tray.Visible = TRUE
+
+  ptray = NEW TrayIcon 
+  ptray.Picture = Picture["ikony/tray.png"]
+  'ptray.Picture.Transparent = TRUE
+  ptray.Visible = TRUE
+
   ME.Hide()
+
+  WAIT 0.1
+  ptray.Delete
+  casovac_Timer() 'dodatecne naplneni pro tray
 END
 
 
