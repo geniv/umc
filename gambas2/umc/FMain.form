@@ -397,6 +397,7 @@
   { casovac #Timer
     #X = 14
     #Y = 14
+    Enabled = True
     Delay = 10000
   }
 }
