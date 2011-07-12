@@ -359,7 +359,7 @@ PUBLIC SUB casovac_Timer()
 
   'obnovovani informaci v tray
   IF tray <> NULL THEN 
-    tray.Tooltip = Subst(("Jas: &1\n&2\n&3\n&4\n&5"), jas_stav.Text, baterie_procento.Text, baterie_cas.Text, uptime_cas.Text, cpuselect.Text)
+    tray.Tooltip = Subst(("Jas: &1\n&2 (&3)\n&4\nCPU: &5"), jas_stav.Text, baterie_procento.Text, baterie_cas.Text, uptime_cas.Text, cpuselect.Text)
   ENDIF 
 END
 

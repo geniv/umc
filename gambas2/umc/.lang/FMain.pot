@@ -47,7 +47,7 @@ msgid "Počet jader: &1"
 msgstr ""
 
 #: FMain.class:362
-msgid "Jas: &1\n&2\n&3\n&4\n&5"
+msgid "Jas: &1\n&2 (&3)\n&4\nCPU: &5"
 msgstr ""
 
 #: FMain.class:375
