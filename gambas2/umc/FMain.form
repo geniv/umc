@@ -207,7 +207,7 @@
           Font = Font["9"]
           Text = ("Start / Stop")
         }
-        { PictureBox5 PictureBox
+        { obrazek_drop PictureBox
           MoveScaled(6,5,6.8571,6.8571)
           Picture = Picture["ikony/dropbox4.png"]
         }
@@ -303,7 +303,7 @@
           Font = Font["9"]
           Text = ("Restart")
         }
-        { PictureBox10 PictureBox
+        { obrazek_apache PictureBox
           MoveScaled(5,6,10,5)
           Picture = Picture["ikony/apache_icon.png"]
         }

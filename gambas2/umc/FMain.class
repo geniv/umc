@@ -1,7 +1,7 @@
 ' Gambas class file
 
 CONST $cmd_dropbox AS String = "Dropbox isn't running!"
-CONST $cmd_apache2 AS String = "Apache2 is NOT running.\n"
+CONST $cmd_apache2 AS String = "Apache is NOT running.\n"
 PRIVATE $shutdown AS Process
 PRIVATE $cpucount AS Integer
 PRIVATE $profiles AS NEW String[]
@@ -17,6 +17,8 @@ PUBLIC SUB _new()
   obrazek_jas.Picture = Picture["ikony/jas.png"]
   obrazek_zvuk.Picture = Picture["ikony/sound.png"]
   obrazek_manager.Picture = Picture["ikony/file_manager.png"]
+  obrazek_apache.Picture = Picture["ikony/apache.png"]
+  obrazek_drop.Picture = Picture["ikony/dropbox.png"]
 
   casovac.Enabled = TRUE
 
@@ -139,7 +141,7 @@ PUBLIC SUB Form_Open()
   shutdown_hour.Text = Hour(Now) + 1
   shutdown_minute.Text = Minute(Now)
 
-  loadprofile()
+  loadProfile()
   profileselect.Index = Settings["custom/profileindex", 0]
 
   'TODO dat spoustet ulohy po spusteni! - ktere jsou nastavene v nastaveni
@@ -375,6 +377,8 @@ PUBLIC SUB nactiDropbox()
     dropbox_start_stop.Text = IIf(ret_shell = $cmd_dropbox, ("Start"), ("Stop"))
     panel_dropbox.Tag = ret_shell
     panel_dropbox.ToolTip = IIf(panel_dropbox.Tag = $cmd_dropbox, ("Dropbox neběží"), ("Dropbox běží"))
+
+    obrazek_drop.Picture = IIf(panel_dropbox.Tag = $cmd_dropbox, Picture["ikony/dropbox_off.png"], Picture["ikony/dropbox.png"])
   ENDIF 
 END
 
@@ -405,6 +409,8 @@ PUBLIC SUB nactiApache()
     apache_start_stop.Text = IIf(ret_shell = $cmd_apache2, ("Start"), ("Stop"))
     panel_apache.Tag = ret_shell  'prenaseni infa
     panel_apache.ToolTip = IIf(ret_shell = $cmd_apache2, ("Apache2 neběží"), ("Apache2 beží"))
+
+    obrazek_apache.Picture = IIf(ret_shell = $cmd_apache2, Picture["ikony/apache_off.png"], Picture["ikony/apache.png"])
   ENDIF 
 END
 
@@ -567,7 +573,7 @@ PRIVATE SUB renderprofile()
   NEXT
 END
 
-PRIVATE SUB loadprofile()
+PRIVATE SUB loadProfile()
   DIM count, i AS Integer
   $profiles.Clear
   count = Settings["custom/profilecount", 0]

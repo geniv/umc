@@ -5,7 +5,7 @@ PRIVATE $tasks AS NEW String[]
 PUBLIC SUB taskconfirm_Click()
   IF taskinput.Text THEN 
     $tasks.add(taskinput.Text)
-    rendertask()
+    renderTask()
     taskinput.Clear
     taskframe.Visible = FALSE
     tasknew.Enabled = TRUE
@@ -27,12 +27,13 @@ END
 
 
 PUBLIC SUB Form_Open()
-  loadtask()
-  manager.Text = Settings["settings/manager", "nautilus"]
+  loadTask()
+  manager.Text = Settings["settings/manager", ""]
 END
 
 PUBLIC SUB Form_Close()
-  savetask()
+  saveTask()
+  'TODO melo by nejak varovat ze zmeny v policku managet se projevi az po opetovnem spusteni aplikace!
   Settings["settings/manager"] = manager.Text
 END
 
@@ -41,13 +42,13 @@ PUBLIC SUB tasklist_KeyPress()
   IF tasklist.Index > -1 THEN 
     IF Key.Delete AND Message.Delete(Subst(("Opravdu smazat tuto ulohu: '&1' ?"), $tasks[tasklist.Index]), ("Ano"), ("Ne")) = 1 THEN 
       $tasks.Delete(tasklist.Index)
-      rendertask()
+      renderTask()
     ENDIF 
   ENDIF 
 END
 
 
-PRIVATE SUB rendertask()
+PRIVATE SUB renderTask()
   DIM item AS String
   tasklist.Clear
   FOR EACH item IN $tasks
@@ -56,7 +57,7 @@ PRIVATE SUB rendertask()
 END
 
 
-PRIVATE SUB savetask()
+PRIVATE SUB saveTask()
   DIM item AS String
   DIM index AS Integer
   'ulozeni task
@@ -68,13 +69,13 @@ PRIVATE SUB savetask()
 END
 
 
-PRIVATE SUB loadtask()
+PRIVATE SUB loadTask()
   DIM count, i AS Integer
   $tasks.Clear
   count = Settings["settings/taskcount", 0]
   FOR i = 0 TO count - 1
     $tasks.Add(Settings["settings/task" & i, ""])
   NEXT 
-  rendertask()
+  renderTask()
 END
 

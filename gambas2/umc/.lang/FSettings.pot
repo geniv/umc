@@ -14,35 +14,35 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: FSettings.class:42
+#: FSettings.class:43
 msgid "Opravdu smazat tuto ulohu: '&1' ?"
 msgstr ""
 
-#: FSettings.class:42
+#: FSettings.class:43
 msgid "Ano"
 msgstr ""
 
-#: FSettings.class:42
+#: FSettings.class:43
 msgid "Ne"
 msgstr ""
 
-#: FSettings.class:103
+#: FSettings.class:104
 msgid "nautilus"
 msgstr ""
 
-#: FSettings.class:112
+#: FSettings.class:113
 msgid "nova uloha"
 msgstr ""
 
-#: FSettings.class:118
+#: FSettings.class:119
 msgid "Ulohy po spusteni"
 msgstr ""
 
-#: FSettings.class:124
+#: FSettings.class:125
 msgid "Přidat ulohu"
 msgstr ""
 
-#: FSettings.class:141
+#: FSettings.class:142
 msgid "Souborový manažer:"
 msgstr ""
 
