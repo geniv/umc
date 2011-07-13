@@ -76,12 +76,11 @@ SearchString=True
 
 [OpenFile]
 File[1]="FMain.form"
-File[2]="FMain.class:359.28"
+File[2]="FMain.class:3.108"
 Active=2
 File[3]="mobility_center_prikazy:113.15"
-File[4]="FSettings.form"
-File[5]="FSettings.class:80.0"
-Count=5
+File[4]="FSettings.class:35.102"
+Count=4
 
 [Watches]
 Count=0

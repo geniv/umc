@@ -1,7 +1,9 @@
 ' Gambas class file
 
 CONST $cmd_dropbox AS String = "Dropbox isn't running!"
-CONST $cmd_apache2 AS String = "Apache is NOT running.\n"
+CONST $cmd_apache AS String = "Apache is NOT running.\n"
+CONST $cmd_apache2 AS String = "Apache2 is NOT running.\n"
+
 PRIVATE $shutdown AS Process
 PRIVATE $cpucount AS Integer
 PRIVATE $profiles AS NEW String[]
@@ -399,18 +401,22 @@ END
 
 PUBLIC SUB nactiApache()
   DIM ret_shell AS String
+  DIM apache_cond AS Boolean
+
   IF panel_apache.Enabled THEN 
     SHELL "/etc/init.d/apache2 status" WAIT TO ret_shell
 
     IF ret_shell = "" THEN 
-      ret_shell = $cmd_apache2
+      'ret_shell = $cmd_apache2  '???
     ENDIF 
 
-    apache_start_stop.Text = IIf(ret_shell = $cmd_apache2, ("Start"), ("Stop"))
-    panel_apache.Tag = ret_shell  'prenaseni infa
-    panel_apache.ToolTip = IIf(ret_shell = $cmd_apache2, ("Apache2 neběží"), ("Apache2 beží"))
+    apache_cond = (ret_shell = $cmd_apache OR ret_shell = $cmd_apache2)
 
-    obrazek_apache.Picture = IIf(ret_shell = $cmd_apache2, Picture["ikony/apache_off.png"], Picture["ikony/apache.png"])
+    apache_start_stop.Text = IIf(apache_cond, ("Start"), ("Stop"))
+    panel_apache.Tag = apache_cond  'prenaseni infa
+    panel_apache.ToolTip = IIf(apache_cond, ("Apache2 neběží"), ("Apache2 beží"))
+
+    obrazek_apache.Picture = IIf(apache_cond, Picture["ikony/apache_off.png"], Picture["ikony/apache.png"])
   ENDIF 
 END
 
@@ -423,7 +429,7 @@ END
 
 PUBLIC SUB apache_start_stop_Click()
   'spusteni shellu
-  SHELL Subst("gksudo /etc/init.d/apache2 &1", IIf(panel_apache.Tag = $cmd_apache2, "start", "stop")) WAIT
+  SHELL Subst("gksudo /etc/init.d/apache2 &1", IIf(panel_apache.Tag, "start", "stop")) WAIT
   nactiApache()
 END
 
