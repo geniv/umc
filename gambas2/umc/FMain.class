@@ -262,7 +262,7 @@ PRIVATE SUB nactiBaterii()
       'nabijeni
       SHELL "echo -n $( acpi | awk -F', ' '{ print $3 }' | awk '{ print $1 }' )" TO ret_shell
       'DEBUG ret_shell
-      baterie_cas.Text = Subst(("Nabijení (odhad): &1"), ret_shell)
+      baterie_cas.Text = IIf(ret_shell, Subst(("Nabijení (odhad): &1"), ret_shell), ("Baterie je plně nabita"))
     ENDIF 
 
       ELSE 
@@ -469,7 +469,7 @@ PUBLIC SUB nactiTouchpad()
     SHELL "echo -n $( synclient -l | grep TouchpadOff | awk -F'= ' '{ print $2 }' )" WAIT TO ret_shell
 'osetreni chyby pri nespravne konfiguraci!!
 'http://www.linuxine.com/2008/06/how-to-disable-touchpad-in-ubuntu.html
-    touchpad_start_stop.Text = IIf(ret_shell = "0", ("zakazat"), ("povolit"))
+    touchpad_start_stop.Text = IIf(ret_shell = "0", ("Zakazat"), ("Povolit"))
     panel_touchpad.Tag = ret_shell
     panel_touchpad.ToolTip = IIf(panel_touchpad.Tag = "0", ("Zapnuto"), ("Vypnuto"))
     obrazek_touchpad.Picture = IIf(panel_touchpad.Tag = "0", Picture["ikony/touchpad-enable-icon.png"], Picture["ikony/touchpad-disable-icon.png"])

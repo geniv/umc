@@ -34,6 +34,10 @@ msgstr ""
 msgid "Nabijení (odhad): &1"
 msgstr ""
 
+#: FMain.class:265
+msgid "Baterie je plně nabita"
+msgstr ""
+
 #: FMain.class:274
 msgid "Zbývající čas (odhad): &1"
 msgstr ""
@@ -123,11 +127,11 @@ msgid "Síť: &1"
 msgstr ""
 
 #: FMain.class:472
-msgid "zakazat"
+msgid "Zakazat"
 msgstr ""
 
 #: FMain.class:472
-msgid "povolit"
+msgid "Povolit"
 msgstr ""
 
 #: FMain.class:474
