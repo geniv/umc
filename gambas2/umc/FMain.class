@@ -230,15 +230,21 @@ PRIVATE SUB nactiBaterii()
   DIM ret_shell, stav AS String
   DIM bat_obr AS Integer
   DIM online AS Boolean
+  DIM bat_available AS Boolean
   'DIM obr_blesk AS Picture
   'baterie
   SHELL "echo -n $( acpi | awk -F', ' '{ print $2 }' | awk -F'%' '{ print $1 }' )" TO ret_shell
-  'DEBUG ret_shell
-  baterie_procento.Text = Subst(("Baterie: &1%"), CInt(ret_shell))
-
-  bat_obr = CInt((CInt(ret_shell) / 100) * 10) * 10
-  'DEBUG bat_obr
-  baterie_obrazek.Picture = Picture[Subst("ikony/baterka/&1.png", bat_obr)]
+  IF ret_shell THEN
+    baterie_procento.Text = Subst(("Baterie: &1%"), CInt(ret_shell))
+    bat_obr = CInt((CInt(ret_shell) / 100) * 10) * 10
+    'DEBUG bat_obr
+    baterie_obrazek.Picture = Picture[Subst("ikony/baterka/&1.png", bat_obr)]
+      ELSE 
+    baterie_procento.Text = ("Baterie nedostupná")
+    baterie_obrazek.Picture = NULL
+  ENDIF
+  bat_available = IIf(ret_shell, TRUE, FALSE)
+  profil_panel.Enabled = bat_available
 
   'nacteni stavu baterie
   SHELL "echo -n $( acpi | awk -F', ' '{ print $1 }' | awk '{ print $3 }' )" TO stav
@@ -262,7 +268,7 @@ PRIVATE SUB nactiBaterii()
       'nabijeni
       SHELL "echo -n $( acpi | awk -F', ' '{ print $3 }' | awk '{ print $1 }' )" TO ret_shell
       'DEBUG ret_shell
-      baterie_cas.Text = IIf(ret_shell, Subst(("Nabijení (odhad): &1"), ret_shell), ("Baterie je plně nabita"))
+      baterie_cas.Text = IIf(ret_shell, Subst(("Nabijení (odhad): &1"), ret_shell), IIf(bat_available, ("Baterie je plně nabita"), ("---")))
     ENDIF 
 
       ELSE 

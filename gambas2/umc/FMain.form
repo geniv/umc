@@ -71,16 +71,6 @@
       Picture = Picture["ikony/baterka/40.png"]
       Stretch = True
     }
-    { profileselect ComboBox
-      MoveScaled(12,12,28,3)
-      Text = ("")
-      ReadOnly = True
-      List = []
-    }
-    { profilesave Button
-      MoveScaled(26,16,14,3)
-      Text = ("Ulo\xC5\xBEit")
-    }
     { baterie_procento TextLabel
       MoveScaled(12,1,28,3)
       Text = ("Baterie: xx%")
@@ -89,14 +79,27 @@
       MoveScaled(12,4,28,3)
       Text = ("Zb\xC3\xBDvaj\xC3\xADc\xC3\xAD \xC4\x8Das (odhad): xx:yy:zz")
     }
-    { profileload Button
-      MoveScaled(12,16,13,3)
-      Text = ("Na\xC4\x8D\xC3\xADst")
-    }
-    { Label9 Label
-      MoveScaled(12,9,24,3)
-      Font = Font["Bold,+1"]
-      Text = ("Profil:")
+    { profil_panel Panel
+      MoveScaled(12,9,28,11)
+      { Label9 Label
+        MoveScaled(0,0,24,3)
+        Font = Font["Bold,+1"]
+        Text = ("Profil:")
+      }
+      { profileselect ComboBox
+        MoveScaled(0,3,28,3)
+        Text = ("")
+        ReadOnly = True
+        List = []
+      }
+      { profileload Button
+        MoveScaled(0,7,13,3)
+        Text = ("Na\xC4\x8D\xC3\xADst")
+      }
+      { profilesave Button
+        MoveScaled(14,7,14,3)
+        Text = ("Ulo\xC5\xBEit")
+      }
     }
   }
   { Panel6 Panel
@@ -209,7 +212,6 @@
         }
         { obrazek_drop PictureBox
           MoveScaled(6,5,6.8571,6.8571)
-          Picture = Picture["ikony/dropbox4.png"]
         }
       }
       { panel_shutdown Panel
@@ -305,7 +307,6 @@
         }
         { obrazek_apache PictureBox
           MoveScaled(5,6,10,5)
-          Picture = Picture["ikony/apache_icon.png"]
         }
         { Label11 Label
           MoveScaled(1,1,18,3)
