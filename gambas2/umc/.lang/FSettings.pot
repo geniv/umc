@@ -14,35 +14,167 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: FSettings.class:43
-msgid "Opravdu smazat tuto ulohu: '&1' ?"
+#: FSettings.class:598
+msgid "Opravdu smazat tuto podmíněnou podmínku?"
 msgstr ""
 
-#: FSettings.class:43
+#: FSettings.class:598
 msgid "Ano"
 msgstr ""
 
-#: FSettings.class:43
+#: FSettings.class:598
 msgid "Ne"
 msgstr ""
 
-#: FSettings.class:104
+#: FSettings.class:603
+msgid "Položka smazána"
+msgstr ""
+
+#: FSettings.class:652
+msgid "Nastavení UMC"
+msgstr ""
+
+#: FSettings.class:657
 msgid "nautilus"
 msgstr ""
 
-#: FSettings.class:113
+#: FSettings.class:670
 msgid "nova uloha"
 msgstr ""
 
-#: FSettings.class:119
+#: FSettings.class:678
 msgid "Ulohy po spusteni"
 msgstr ""
 
-#: FSettings.class:125
+#: FSettings.class:685
 msgid "Přidat ulohu"
 msgstr ""
 
-#: FSettings.class:142
+#: FSettings.class:702
 msgid "Souborový manažer:"
+msgstr ""
+
+#: FSettings.class:707
+msgid "Minimalizovat do Tray"
+msgstr ""
+
+#: FSettings.class:712
+msgid "Zobrazovat baterii v Tray"
+msgstr ""
+
+#: FSettings.class:717
+msgid "- když je přítomna baterie"
+msgstr ""
+
+#: FSettings.class:719
+msgid "- stále"
+msgstr ""
+
+#: FSettings.class:719
+msgid "- pokud se vybijí"
+msgstr ""
+
+#: FSettings.class:719
+msgid "- pokud se nabijí"
+msgstr ""
+
+#: FSettings.class:719
+msgid "- pokud se nabijí / vybijí"
+msgstr ""
+
+#: FSettings.class:719
+msgid "- pokud je přítomna"
+msgstr ""
+
+#: FSettings.class:724
+msgid "Podmíněné nastavování:"
+msgstr ""
+
+#: FSettings.class:730
+msgid "Ptát se při ukončení"
+msgstr ""
+
+#: FSettings.class:743
+msgid "Interval časovače"
+msgstr ""
+
+#: FSettings.class:748
+msgid "+"
+msgstr ""
+
+#: FSettings.class:763
+msgid "..."
+msgstr ""
+
+#: FSettings.class:765
+msgid "IF"
+msgstr ""
+
+#: FSettings.class:765
+msgid "//CMD"
+msgstr ""
+
+#: FSettings.class:773
+msgid "BATTERY >"
+msgstr ""
+
+#: FSettings.class:773
+msgid "BATTERY <"
+msgstr ""
+
+#: FSettings.class:773
+msgid "BATTERY >="
+msgstr ""
+
+#: FSettings.class:773
+msgid "BATTERY <="
+msgstr ""
+
+#: FSettings.class:773
+msgid "BATTERY =="
+msgstr ""
+
+#: FSettings.class:773
+msgid "BATTERY !="
+msgstr ""
+
+#: FSettings.class:773
+msgid "ADAPTER is"
+msgstr ""
+
+#: FSettings.class:779
+msgid "OFF"
+msgstr ""
+
+#: FSettings.class:796
+msgid "ComboBox1"
+msgstr ""
+
+#: FSettings.class:798
+msgid "CONTRAST"
+msgstr ""
+
+#: FSettings.class:798
+msgid "POWERSAVE"
+msgstr ""
+
+#: FSettings.class:798
+msgid "TOUCHEPAD"
+msgstr ""
+
+#: FSettings.class:798
+msgid "MESSAGE"
+msgstr ""
+
+#: FSettings.class:798
+msgid "XRANDR"
+msgstr ""
+
+#: FSettings.class:798
+msgid "SHELL"
+msgstr ""
+
+#: FSettings.class:856
+msgid "Zálohovat"
 msgstr ""
 

@@ -4,17 +4,22 @@ CONST $cmd_dropbox AS String = "Dropbox isn't running!"
 CONST $cmd_apache AS String = "Apache is NOT running.\n"
 CONST $cmd_apache2 AS String = "Apache2 is NOT running.\n"
 
-PRIVATE $shutdown AS Process
+'PRIVATE $shutdown AS Process
 PRIVATE $cpucount AS Integer
 PRIVATE $profiles AS NEW String[]
 
 'pole governor pro cpu
 PRIVATE governor AS String[] = ["conservative", "ondemand", "performance", "powersave"]
+PUBLIC governorText AS String[] = [("Konzervativně"), ("Podle poptávky"), ("Vysoký výkon"), ("Nízká spotřeba")]
+
+'vnitrni promenn pro gettry
+PRIVATE $onlineBat AS Boolean
+PRIVATE $batteryVal AS Integer
 
 PRIVATE tray AS TrayIcon
 
 PUBLIC SUB _new()
-  DIM pocet AS Integer  
+  DIM pocet, pid AS Integer
 
   obrazek_jas.Picture = Picture["ikony/jas.png"]
   obrazek_zvuk.Picture = Picture["ikony/sound.png"]
@@ -23,14 +28,42 @@ PUBLIC SUB _new()
   obrazek_drop.Picture = Picture["ikony/dropbox.png"]
 
   casovac.Enabled = TRUE
+  casovac.Delay = Settings["settings/timerdelay", 10000]
+
+
+' IF Settings["application/pid", 0] > 0 THEN 
+'   DEBUG Message.Question(("program již běží. Opravdu spustit znovu?"), ("spustit"), ("ukončit!"))
+' ENDIF 
+
+  ' IF Application.Args[1] = "--help" THEN 
+  '   PRINT "ahoj, snazis se ziskat napovedu?? ale marne!!"
+  ' ENDIF 
 
   'kontrola znovu spusteni
-  pocet = Spusteno()
-  IF pocet > 1 THEN 
-    Message.Info(Subst(("Program již beží (&1x) a proto bude ukončen."), pocet))
-    ME.Close(1)
+
+  pid = Settings["application/pid", 0]
+  IF pid > 0 THEN 
+      IF Message.Question(("program již běží. Opravdu spustit znovu?"), ("spustit, a zabit timto již běžící"), ("ukončit toto!")) = 1 THEN 
+          SHELL Subst("kill &1", pid) WAIT 'zabiti puvodniho programu
+          setPID()  'nastaveni noveho cisla procesu
+        ELSE
+          ME.Close(1)
+      ENDIF 
+    ELSE 
+      setPID()
   ENDIF 
-  
+
+  'pocet = Spusteno()
+  'IF pocet = 1 THEN 
+  'ENDIF 
+
+  ' IF pocet > 1 THEN 
+  '       ELSE 
+  '         
+  '     ENDIF 
+  '   'Message.Info(Subst(("Program již beží (&1x) a proto bude ukončen."), pocet))
+  ' ENDIF 
+
   'TODO v mastaveni seznam prikazu ktere se maji spustit po spusteni umc na konzole
   ''ukladat toto nataveni do ini!
   '$ qdbusviewer
@@ -46,11 +79,19 @@ PUBLIC SUB _new()
   panel_shutdown.Enabled = existShutdown()
   panel_dropbox.Enabled = existDropbox()
 
+  cpuselect.List = governorText
 END
+
+PRIVATE SUB setPID()
+  Settings["application/pid"] = Application.Id
+  Settings.Save()
+END
+
 
 'pocitani spustenych instanci programu
 PRIVATE SUB Spusteno() AS Integer
   DIM ret_shell AS String
+  'TOD nebo: "ps ax | grep &1"
   SHELL Subst("ps -ef | grep 'gbr' | grep -c '&1'", Application.Name) TO ret_shell
   RETURN CInt(ret_shell) - 1
 END
@@ -90,6 +131,24 @@ PRIVATE SUB existAcpi() AS Boolean
   RETURN ret_shell
 END
 
+PRIVATE SUB existUptime() AS Boolean
+  DIM ret_shell AS String
+  TRY SHELL "which uptime" WAIT TO ret_shell
+  RETURN ret_shell
+END
+
+PRIVATE SUB existSit() AS Boolean
+  DIM ret_shell AS String
+  TRY SHELL "which ip" WAIT TO ret_shell
+  RETURN ret_shell
+END
+
+PRIVATE SUB existCpu() AS Boolean
+  DIM ret_shell AS String
+  TRY SHELL "which cpufreq-selector" WAIT TO ret_shell
+  RETURN ret_shell
+END
+
 PRIVATE SUB existWebcam() AS Boolean
   'komplexni test?!
 END
@@ -113,15 +172,15 @@ PRIVATE SUB existShutdown() AS Boolean
 END
 
 PUBLIC SUB Form_Show()
-  ME.X = Settings["win/x", 0]
-  ME.Y = Settings["win/y", 0]
+  ME.X = Settings["application/x", 0]
+  ME.Y = Settings["application/y", 0]
 END
 
 PUBLIC SUB Form_Open()
   DIM ret_shell AS String
   'nacteni pozice, expanderu
-  ME.X = Settings["win/x", 0]
-  ME.Y = Settings["win/y", 0]
+  ME.X = Settings["application/x", 0]
+  ME.Y = Settings["application/y", 0]
   ostatni_expander.Hidden = Settings["custom/expander", FALSE]
   'DEBUG ostatni_expander.Hidden
   IF ostatni_expander.Hidden THEN 
@@ -130,15 +189,17 @@ PUBLIC SUB Form_Open()
     ostatni_expander_Show()
   ENDIF 
 
-  nactiJas()
-  nactiHlasitost()
-  nactiTouchpad()
-  nactiCpu()
-  nactiBaterii()
-  nactiApache()
-  nactiDropbox()
-  nactiUptime()
-  nactiSit()
+  'inicializace programu ktere jsou v pocitaci
+  IF existJas() THEN nactiJas()
+  IF existHlasitost() THEN nactiHlasitost()
+  IF existTouchepad() THEN nactiTouchpad()
+  IF existCpu() THEN nactiCpu()
+  IF existAcpi() THEN nactiBaterii()
+  IF existApache() THEN nactiApache()
+  IF existDropbox() THEN nactiDropbox()
+  IF existUptime() THEN nactiUptime()
+  IF existSit() THEN nactiSit()
+  'panel_webcam.Enabled
 
   shutdown_hour.Text = Hour(Now) + 1
   shutdown_minute.Text = Minute(Now)
@@ -146,17 +207,19 @@ PUBLIC SUB Form_Open()
   loadProfile()
   profileselect.Index = Settings["custom/profileindex", 0]
 
-  'TODO dat spoustet ulohy po spusteni! - ktere jsou nastavene v nastaveni
+  FSettings.initConditionalGrid()
 
+  'TODO dat spoustet ulohy po spusteni! - ktere jsou nastavene v nastaveni
 END
 
 PUBLIC SUB Form_Close()
   'ulozeni pozice, expanderu
-  Settings["win/x"] = ME.ScreenX - 1
-  Settings["win/y"] = ME.ScreenY - 27
+  Settings["application/x"] = ME.ScreenX - 1
+  Settings["application/y"] = ME.ScreenY - 27
+  Settings["application/pid"] = 0
   'DEBUG ostatni_expander.Hidden
   Settings["custom/expander"] = ostatni_expander.Hidden
-  saveprofile()
+  'saveprofile()
   Settings["custom/profileindex"] = profileselect.Index
   Settings.Save()
   trayclose()
@@ -190,9 +253,11 @@ PUBLIC SUB hlasitost_slider_Change()
   nastavHlasitost()
 END
 
+
 PUBLIC SUB hlasitost_ztisit_Click()
   nastavMuteHlasitost()
 END
+
 
 'nacte informace z utility pro zvuk
 PRIVATE SUB nactiHlasitost()
@@ -220,6 +285,7 @@ PRIVATE SUB nactiHlasitost()
   nactiObrazekHlasitosti()
 END
 
+
 PRIVATE SUB nactiObrazekHlasitosti()
   obrazek_zvuk.Picture = IIf(NOT hlasitost_ztisit.Value, Picture["ikony/sound.png"], Picture["ikony/sound_mute.png"])
 END
@@ -231,20 +297,34 @@ PRIVATE SUB nactiBaterii()
   DIM bat_obr AS Integer
   DIM online AS Boolean
   DIM bat_available AS Boolean
-  'DIM obr_blesk AS Picture
+
   'baterie
   SHELL "echo -n $( acpi | awk -F', ' '{ print $2 }' | awk -F'%' '{ print $1 }' )" TO ret_shell
   IF ret_shell THEN
-    baterie_procento.Text = Subst(("Baterie: &1%"), CInt(ret_shell))
+    baterie_obrazek.Visible = TRUE
+    baterie_procento.Text = Subst(("Baterie: &1%"), CInteger(ret_shell))
+    $batteryVal = CInteger(ret_shell)
     bat_obr = CInt((CInt(ret_shell) / 100) * 10) * 10
     'DEBUG bat_obr
     baterie_obrazek.Picture = Picture[Subst("ikony/baterka/&1.png", bat_obr)]
       ELSE 
+    baterie_obrazek.Visible = FALSE
     baterie_procento.Text = ("Baterie nedostupná")
-    baterie_obrazek.Picture = NULL
   ENDIF
+
   bat_available = IIf(ret_shell, TRUE, FALSE)
   profil_panel.Enabled = bat_available
+
+'TODO obrazek baterky ktera chybi!!!
+
+'TODO dodelat!!!
+  ' IF Settings["settings/batterytray", FALSE] THEN 
+  '   IF tray <> NULL THEN 
+  '     tray.Picture = Picture["ikony/baterka/mini10.png"]
+  '   ENDIF 
+  '     ELSE 
+  '   tray.Picture = Picture["ikony/tray.png"]
+  ' ENDIF 
 
   'nacteni stavu baterie
   SHELL "echo -n $( acpi | awk -F', ' '{ print $1 }' | awk '{ print $3 }' )" TO stav
@@ -254,6 +334,7 @@ PRIVATE SUB nactiBaterii()
   SHELL "echo -n $( acpi -a | awk -F': ' '{ print $2 }' )" TO ret_shell
   'DEBUG ret_shell
   online = IIf(ret_shell = "on-line", TRUE, FALSE)
+  $onlineBat = online
 
   IF online THEN 
 'dodat blesk nabijeni nejak!
@@ -275,11 +356,41 @@ PRIVATE SUB nactiBaterii()
 
     IF stav = "Discharging" THEN
       'vybijeni
-      SHELL "echo -n $( acpi | awk -F', ' '{ print $3 }' | awk '{ print $1 }' )" TO ret_shell
+      SHELL "echo -n $( acpi | awk -F', ' '{ print $3 }' | awk '{ print $1 }' )" WAIT TO ret_shell
       'DEBUG ret_shell
       baterie_cas.Text = Subst(("Zbývající čas (odhad): &1"), ret_shell)
     ENDIF 
 
+  ENDIF 
+END
+
+
+PUBLIC SUB getBatteryValue() AS Integer
+  RETURN $batteryVal
+END
+
+
+
+PUBLIC SUB isAdapter() AS Boolean
+  RETURN $onlineBat
+END
+
+
+PUBLIC SUB getGovernor() AS Integer
+  DIM ret_shell AS String
+  SHELL "echo -n $( cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor )" WAIT TO ret_shell
+  RETURN governor.Find(ret_shell)
+END
+
+
+PUBLIC SUB setGovernor(stav AS String)
+  DIM status AS String = governor[governorText.Find(stav)]
+  DIM i AS Integer
+  'hromadne nastavovani vykonu, pokud jiz neni nastaveno
+  IF status <> governor[getGovernor()] THEN
+    FOR i = 0 TO $cpucount - 1  'projde vsechyn jadra
+      TRY SHELL Subst("cpufreq-selector --cpu &1 --governor '&2'", i, status) WAIT
+    NEXT
   ENDIF 
 END
 
@@ -305,12 +416,12 @@ PRIVATE SUB nactiCpu()
 ''conservative ondemand userspace powersave performance
   SHELL "echo -n $( cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor )" TO ret_shell
   cpuselect.Index = governor.Find(ret_shell)  'nacteni aktualiho indexu governor
+  governorLabel.Text = governorText[cpuselect.Index]
 END
 
 'nacte informace z utility pro uptime
 PRIVATE SUB nactiUptime()
   DIM ret_shell AS String
-  'uptime
   SHELL "echo -n $( uptime | awk -F',  ' '{ print $1 }' )" TO ret_shell
   'DEBUG ret_shell
   uptime_cas.Text = ret_shell
@@ -330,47 +441,66 @@ PRIVATE SUB nactiJas()
   jas_stav.Text = Subst("&1%", jas_slider.Value)
 END
 
-PRIVATE SUB nastavJas(proc AS Integer)
-  SHELL Subst("qdbus org.gnome.PowerManager /org/gnome/PowerManager/Backlight SetBrightness &1 > /dev/null", proc) WAIT
-  nactiJas()
+PUBLIC SUB getJas() AS Integer
+  DIM ret_shell AS String
+  SHELL "echo -n $( qdbus org.gnome.PowerManager /org/gnome/PowerManager/Backlight GetBrightness )" WAIT TO ret_shell
+  RETURN CInteger(ret_shell)
+END
+
+
+PUBLIC SUB setJas(proc AS Integer)
+  IF getJas() <> proc THEN
+    SHELL Subst("qdbus org.gnome.PowerManager /org/gnome/PowerManager/Backlight SetBrightness &1 > /dev/null", proc) WAIT
+    nactiJas()
+  ENDIF 
 END
 
 PUBLIC SUB jas_plus_Click()
   DIM jas AS Integer
   jas = jas_slider.Value + 10
-  nastavJas(jas)
+  setJas(jas)
 END
 
 PUBLIC SUB jas_minus_Click()
   DIM jas AS Integer
   jas = jas_slider.Value - 10
-  nastavJas(jas)
+  setJas(jas)
 END
 
 PUBLIC SUB jas_slider_MouseUp()
-  nastavJas(jas_slider.Value)
+  setJas(jas_slider.Value)
 END
 
 'hlavni casovac zarizeni
 PUBLIC SUB casovac_Timer()
-  nactiJas()
-  nactiHlasitost()
-  'nactiTouchpad()
-  nactiBaterii()
-  nactiUptime()
+  IF existJas() THEN nactiJas()
+  IF existHlasitost() THEN nactiHlasitost()
+  IF existTouchepad() THEN nactiTouchpad()
+  'IF existCpu() THEN nactiCpu()
+
+  IF existCpu() THEN governorLabel.Text = governorText[getGovernor()]
+
+  IF existAcpi() THEN nactiBaterii()
+  IF existUptime() THEN nactiUptime()
   'deaktivovat kdyz je zabaleno!
   IF NOT ostatni_expander.Hidden THEN
     'webcam
-    nactiApache()
-    nactiDropbox()
+    IF existApache() THEN nactiApache()
+    IF existDropbox() THEN nactiDropbox()
     'casovac, shutdown
   ENDIF
-  nactiSit()
+  IF existSit() THEN nactiSit()
 
   'obnovovani informaci v tray
   IF tray <> NULL THEN 
     tray.Tooltip = Subst(("Jas: &1\n&2 (&3)\n&4\nCPU: &5"), jas_stav.Text, baterie_procento.Text, baterie_cas.Text, uptime_cas.Text, cpuselect.Text)
   ENDIF 
+
+  IF Application.MainWindow.Minimized AND Settings["settings/minimizetray", FALSE] AND tray = NULL THEN 
+    trayhide_Click()  'nakliknuti tlacitka pro schovani do tray
+  ENDIF 
+
+  FSettings.initConditionalGrid() 'provadeni podminenych prikazu
 END
 
 
@@ -456,7 +586,9 @@ END
 PUBLIC SUB nactiSit()
   DIM active, prijato, odeslano, ret_shell AS String
   DIM pole, pole2 AS String[]
-  SHELL "echo -n $( ip route | awk -W posix '/dev/ { print $3 }' | head -n 1 )" WAIT TO active
+  
+'FIXME nezchrousta via pripojeni!
+  SHELL "echo -n $( ip route | awk '{print ($2 == \"via\" ? $5 : $3 )}' | head -n 1 )" WAIT TO active
   active = IIf(active, active, "lo")  'kdyz nebude zadna, pripoji loopback
   sit_active.Text = Subst(("Síť: &1"), active)
 
@@ -489,22 +621,47 @@ PUBLIC SUB touchpad_start_stop_Click()
 END
 
 
+PUBLIC SUB getListScreen() AS String[]
+  DIM ret_shell AS String
+  SHELL "echo -n $( xrandr | grep connected | grep -v disconnected | awk '{print $1}' )" WAIT TO ret_shell
+  RETURN Split(ret_shell, " ")
+END
+
+PUBLIC SUB getCountActiveScreen() AS Integer
+  DIM ret_shell AS String
+  SHELL "echo -n $( xrandr | grep '*' | awk '{print $1}' )" WAIT TO ret_shell
+  RETURN Split(ret_shell, " ").Count
+END
+
+
+PUBLIC SUB getActiveScreen() AS String
+  DIM ret_shell AS String
+  SHELL "echo -n $( xrandr | grep connected | grep -v disconnected | grep $( xrandr | grep '*' | awk '{print $1}' ) | awk '{print $1}' )" WAIT TO ret_shell
+  RETURN ret_shell
+END
+
+
+
 PUBLIC SUB nastaveni_button_Click()
   FSettings.ShowModal()
 END
 
 
 PUBLIC SUB shutdown_start_Click()
+  DIM ret AS String
 
   SHELL "gksudo ls > /dev/null" WAIT 
-  $shutdown = SHELL Subst("sudo shutdown -&1 &2:&3 &", IIf(shutdown_restart.Value, "r", "h"), shutdown_hour.Text, shutdown_minute.Text) WAIT 
+  '$shutdown = 
+  SHELL Subst("sudo shutdown -&1 &2:&3 &", IIf(shutdown_restart.Value, "r", "h"), shutdown_hour.Text, shutdown_minute.Text) WAIT 
 
 'TODO poradne posefovat!! informovat, overovat v casovaci state
-  PRINT $shutdown.Id + 1
-  SHELL "ps -A | grep shutdown"
-  SHELL Subst("cat /proc/&1/cmdline", $shutdown.Id + 1)
-  'cat /proc/7783/cmdline
+  'PRINT $shutdown.Id + 1
+  SHELL "ps ax | grep shutdown" TO ret
+  DEBUG ret
+  'TODO zjistovat na poet radku a odecitat -1!!!!!!!!
 
+  'SHELL Subst("cat /proc/&1/cmdline", $shutdown.Id + 1)
+  'cat /proc/7783/cmdline
 END
 
 PUBLIC SUB shutdown_kill_Click()
@@ -517,25 +674,15 @@ PUBLIC SUB manager_exec_Click()
 END
 
 
-
 PUBLIC SUB trayhide_Click()
   DIM obr AS Picture
-  DIM ptray AS TrayIcon
 
   tray = NEW TrayIcon AS "Tray"
   tray.Picture = Picture["ikony/tray.png"]
   tray.Picture.Transparent = TRUE
   tray.Visible = TRUE
-
-  ptray = NEW TrayIcon 
-  ptray.Picture = Picture["ikony/tray.png"]
-  'ptray.Picture.Transparent = TRUE
-  ptray.Visible = TRUE
-
-  ME.Hide()
-
+  ME.Hide() 'schovani okna
   WAIT 0.1
-  ptray.Delete
   casovac_Timer() 'dodatecne naplneni pro tray
 END
 
@@ -544,6 +691,7 @@ PUBLIC SUB trayclose()
   IF tray <> NULL THEN
     tray.Visible = FALSE
     tray.Delete()
+    tray = NULL 'vynulovani pointeru
   ENDIF 
 END
 
@@ -557,14 +705,7 @@ END
 
 
 PUBLIC SUB cpuset_Click()
-  DIM status AS String
-  DIM i AS Integer
-  status = governor[cpuselect.Index]
-  'hromadne nastavovani vykonu
-  FOR i = 0 TO $cpucount - 1
-  DEBUG Subst("cpufreq-selector --cpu &1 --governor '&2'", i, status)
-    TRY SHELL Subst("cpufreq-selector --cpu &1 --governor '&2'", i, status) WAIT
-  NEXT 
+  setGovernor(cpuselect.Text)
 END
 
 
@@ -577,6 +718,7 @@ PUBLIC SUB profilesave_Click()
   ENDIF 
 END
 
+
 PRIVATE SUB renderprofile() 
   DIM item AS String
   profileselect.Clear
@@ -584,6 +726,7 @@ PRIVATE SUB renderprofile()
     profileselect.Add(item)
   NEXT
 END
+
 
 PRIVATE SUB loadProfile()
   DIM count, i AS Integer
@@ -607,3 +750,7 @@ PRIVATE SUB saveprofile()
   NEXT 
 END
 
+
+PUBLIC SUB aboutButton_Click()
+  Message.Info(Subst(("Verze programu: &1\nAutoři: Geniv & Kubijo"), Application.Version))
+END

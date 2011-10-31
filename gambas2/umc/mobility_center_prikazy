@@ -10,6 +10,13 @@ amixer sset Master playback off
 amixer sset Master playback 50%
 amixer sset Master playback 28
 
+zapracovat:
+xrandr --output LVDS1 --auto
+xrandr --output VGA1 --off
+xrandr | grep connected | awk '{print $1}'
+xrandr | grep connected | grep -v disconnected | awk '{print $1}'
+
+
 odkaz na sit: gnome-nettool
 restart sitoveho manageru: gksudo /etc/init.d/network-manager
 znovuziskani dhcp adresy: gksudo dhclient

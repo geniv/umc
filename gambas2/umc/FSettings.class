@@ -1,81 +1,608 @@
 ' Gambas class file
 
-PRIVATE $tasks AS NEW String[]
+'PRIVATE $tasks AS NEW String[]
+PRIVATE $condGrid AS String[]
+PRIVATE $zobrazeno AS Boolean = FALSE
 
-PUBLIC SUB taskconfirm_Click()
-  IF taskinput.Text THEN 
-    $tasks.add(taskinput.Text)
-    renderTask()
-    taskinput.Clear
-    taskframe.Visible = FALSE
-    tasknew.Enabled = TRUE
-  ENDIF 
-END
+' PUBLIC SUB taskconfirm_Click()
+'   IF taskinput.Text THEN 
+'     $tasks.add(taskinput.Text)
+'     renderTask()
+'     taskinput.Clear
+'     taskframe.Visible = FALSE
+'     tasknew.Enabled = TRUE
+'   ENDIF 
+' END
+' 
+' 
+' PUBLIC SUB Form_MouseDown()
+'   ' IF Mouse.Left THEN 
+'   '   taskframe.Visible = FALSE
+'   '   tasknew.Enabled = TRUE
+'   ' ENDIF 
+' END
+' 
+' 
+' PUBLIC SUB tasknew_Click()
+'   taskframe.Visible = TRUE
+'   tasknew.Enabled = FALSE
+'   taskinput.SetFocus()
+' END
 
-PUBLIC SUB Form_MouseDown()
-  IF Mouse.Left THEN 
-    taskframe.Visible = FALSE
-    tasknew.Enabled = TRUE
-  ENDIF 
-END
 
-PUBLIC SUB tasknew_Click()
-  taskframe.Visible = TRUE
-  tasknew.Enabled = FALSE
-  taskinput.SetFocus()
+PUBLIC SUB _new()
+  'inicializace gridu
+  conditionalGrid.Rows.Count = 0
+  conditionalGrid.Columns.Count = 8
 END
 
 
 PUBLIC SUB Form_Open()
-  loadTask()
+  'loadTask()
+
   manager.Text = Settings["settings/manager", ""]
+  minimizeTrayCheck.Value = Settings["settings/minimizetray", FALSE]
+  batteryCheck.Value = Settings["settings/batterytray", FALSE]
+  batteryShowCombo.Index = Settings["settings/batteryshowtray", 0]
+  batteryShowCombo.Enabled = batteryCheck.Value
+  timerSpin.Value = Settings["settings/timerdelay", 10000]
+
+  'inicializace gridu
+  'conditionalGrid.Columns[0].Title = ("typ akce")
+  conditionalGrid.Columns[0].Resizable = FALSE
+  conditionalGrid.Columns[0].Width = 15
+  conditionalGrid.Columns[1].Resizable = FALSE
+  conditionalGrid.Columns[1].Width = 40
+  'conditionalGrid.Columns[1].Title = ("zařízení")
+  conditionalGrid.Columns[2].Resizable = FALSE
+  conditionalGrid.Columns[2].Width = 100
+  'conditionalGrid.Columns[2].Title = ("operátor")
+  conditionalGrid.Columns[3].Resizable = FALSE
+  'conditionalGrid.Columns[3].Title = ("hodnota")
+  conditionalGrid.Columns[4].Resizable = FALSE
+  'conditionalGrid.Columns[4].Title = ("akce hodnoty")
+  conditionalGrid.Columns[5].Resizable = FALSE
+  conditionalGrid.Columns[5].Width = 150
+  conditionalGrid.Columns[6].Resizable = FALSE
+  conditionalGrid.Columns[6].Width = 21
+  conditionalGrid.Columns[7].Resizable = FALSE
+  conditionalGrid.Columns[7].Width = 21
+
+  loadConditionalGrid() 'nacteni obsahu gridu
 END
+
 
 PUBLIC SUB Form_Close()
-  saveTask()
+  'saveTask()
+  saveConditionalGrid()
   'TODO melo by nejak varovat ze zmeny v policku managet se projevi az po opetovnem spusteni aplikace!
   Settings["settings/manager"] = manager.Text
+  Settings["settings/minimizetray"] = minimizeTrayCheck.Value
+  Settings["settings/batterytray"] = batteryCheck.Value
+  Settings["settings/batteryshowtray"] = batteryShowCombo.Index
+  Settings["settings/timerdelay"] = timerSpin.Value
 END
 
 
-PUBLIC SUB tasklist_KeyPress()
-  IF tasklist.Index > -1 THEN 
-    IF Key.Delete AND Message.Delete(Subst(("Opravdu smazat tuto ulohu: '&1' ?"), $tasks[tasklist.Index]), ("Ano"), ("Ne")) = 1 THEN 
-      $tasks.Delete(tasklist.Index)
-      renderTask()
-    ENDIF 
+' PUBLIC SUB tasklist_KeyPress()
+'   IF tasklist.Index > -1 THEN 
+'     IF Key.Delete AND Message.Delete(Subst(("Opravdu smazat tuto ulohu: '&1' ?"), $tasks[tasklist.Index]), ("Ano"), ("Ne")) = 1 THEN 
+'       $tasks.Delete(tasklist.Index)
+'       renderTask()
+'     ENDIF 
+'   ENDIF 
+' END
+
+
+' PRIVATE SUB renderTask()
+'   DIM item AS String
+'   tasklist.Clear
+'   FOR EACH item IN $tasks
+'     tasklist.Add(item)
+'   NEXT
+' END
+
+
+' PRIVATE SUB saveTask()
+'   DIM item AS String
+'   DIM index AS Integer
+'   'ulozeni task
+'   Settings["settings/taskcount"] = $tasks.length
+'   FOR EACH item IN $tasks
+'     Settings["settings/task" & index] = item
+'     INC index
+'   NEXT 
+' END
+' 
+' 
+' PRIVATE SUB loadTask()
+'   DIM count, i AS Integer
+'   $tasks.Clear
+'   count = Settings["settings/taskcount", 0]
+'   FOR i = 0 TO count - 1
+'     $tasks.Add(Settings["settings/task" & i, ""])
+'   NEXT 
+'   renderTask()
+' END
+
+
+PRIVATE SUB saveConditionalGrid()
+  DIM i, j AS Integer
+  Settings["settings/condgridrows"] = conditionalGrid.Rows.Count
+  FOR i = 0 TO conditionalGrid.Rows.Count - 1
+    FOR j = 0 TO conditionalGrid.Columns.Count - 1
+      Settings[Subst("settings/condgrid_&1_&2", i, j)] = conditionalGrid[i, j].Text
+    NEXT 
+  NEXT 
+END
+
+
+PRIVATE SUB loadConditionalGrid()
+  DIM i, j AS Integer
+  conditionalGrid.Rows.Count = Settings["settings/condgridrows", 0]
+  FOR i = 0 TO conditionalGrid.Rows.Count - 1
+    FOR j = 0 TO conditionalGrid.Columns.Count - 1
+      conditionalGrid[i, j].Text = Settings[Subst("settings/condgrid_&1_&2", i, j), ""]
+    NEXT 
+  NEXT 
+END
+
+
+PUBLIC SUB initConditionalGrid()
+  DIM i, j, rows, cols AS Integer
+  DIM separe AS String[]
+
+  rows = Settings["settings/condgridrows", 0]
+  cols = conditionalGrid.Columns.Count
+  IF rows > 0 THEN 
+    $condGrid = NEW String[rows, cols]
+    FOR i = 0 TO rows - 1
+      FOR j = 0 TO cols - 1
+        $condGrid[i, j] = Settings[Subst("settings/condgrid_&1_&2", i, j), ""]
+      NEXT 
+
+      'pokud je radek aktivni
+      IF $condGrid[i, 0] = "X" THEN 
+        'vyhodnoceni IF
+        SELECT CASE $condGrid[i, 1]
+            CASE "IF"
+              SELECT CASE $condGrid[i, 2]
+                CASE "ADAPTER is"
+                  'pokud je adapret pritomen
+                  IF $condGrid[i, 3] = "ON" AND FMain.isAdapter() THEN 
+                    execConditionalGrid($condGrid[i, 4], $condGrid[i, 5])
+                  ENDIF 
+                  'pokud je adapter pryc
+                  IF $condGrid[i, 3] = "OFF" AND NOT FMain.isAdapter() THEN 
+                    execConditionalGrid($condGrid[i, 4], $condGrid[i, 5])
+                  ENDIF 
+    
+                ' CASE "SCREEN is"
+                '   IF $condGrid[i, 3] = "XRANDR" AND ($condGrid[i, 4] = "AUTO" OR $condGrid[i, 4] = "OFF") AND FMain.getCountActiveScreen() = 1 AND $condGrid[i, 2] = FMain.getActiveScreen() THEN 
+                '     'DEBUG $condGrid[i, 2], FMain.getCountActiveScreen(), FMain.getActiveScreen()
+                '     DEBUG $condGrid[i, 2], FMain.getActiveScreen()
+                '     execConditionalGrid("SHELL", Subst("xrandr --output &1 --&2", $condGrid[i, 2], String.Lower($condGrid[i, 4])))
+                '   ENDIF 
+                ' 
+                ' CASE "SCREEN conn"  'pokud se pripoji obtazovka
+                '   IF $condGrid[i, 3] = "XRANDR" AND FMain.getCountActiveScreen() > 1 THEN  'AND $condGrid[i, 2] = FMain.getActiveScreen()
+                '     separe = Split($condGrid[i, 4], ":")
+                '     DEBUG "pripojen:", FMain.getActiveScreen()
+                '     execConditionalGrid("SHELL", Subst("xrandr --output &1 --&2", separe[1], String.Lower(separe[0])))
+                ' 
+                '     ' IF separe[0] = "OFF" THEN 
+                '     '   'DEBUG separe[0], separe[1], $condGrid[i, 2], FMain.getActiveScreen()
+                '     '   'execConditionalGrid("SHELL", Subst("xrandr --output &1 --&2", separe[1], String.Lower($condGrid[i, 4])))
+                '     ' ENDIF 
+                '     ' 
+                '     ' IF separe[0] = "AUTO" THEN 
+                '     '   'execConditionalGrid("SHELL", Subst("xrandr --output &1 --auto", separe[1]))
+                '     ' ENDIF 
+                '   ENDIF 
+    'FIXME screeny vyhodit a dat tam preddesinovane tlacitka.. anebo jen casove spousteni xrandr-u jako pro overeni dostupnosti jinych monitoru!!!!
+    'xrandr z auto kontroly vyhodit!!!!!! to dat jen na nejake prilezitosti!!!!!
+                ' CASE "SCREEN disconn" 'pokud se odpoji obrazovka
+                '   IF $condGrid[i, 3] = "XRANDR" THEN  'AND $condGrid[i, 2] = FMain.getActiveScreen()
+                '   'AND $condGrid[i, 2] <> FMain.getActiveScreen()
+                '     separe = Split($condGrid[i, 4], ":")
+                '     DEBUG "odpojen:", FMain.getActiveScreen()
+                '     'DEBUG FMain.isAdapter()
+                '     'DEBUG $condGrid[i, 2], FMain.getActiveScreen()
+                '     'DEBUG separe[1], FMain.getActiveScreen()
+                '     IF FMain.getActiveScreen() <> separe[1] THEN
+                '       execConditionalGrid("SHELL", Subst("xrandr --output &1 --&2", separe[1], String.Lower(separe[0])))
+                '     ENDIF 
+                '     'DEBUG separe[0], separe[1]
+                '   ENDIF 
+    
+    'TODO malinko prepracovat!! i kdyz asi je velice malo pravdepodovne ze nekdo bude potrebovat odchytit podminku pri nabijeni?!!!
+                CASE "BATTERY >"
+                  IF NOT FMain.isAdapter() AND FMain.getBatteryValue() > CInteger($condGrid[i, 3]) THEN 
+                    execConditionalGrid($condGrid[i, 4], $condGrid[i, 5])
+                  ENDIF 
+    
+                CASE "BATTERY <"
+                  IF NOT FMain.isAdapter() AND FMain.getBatteryValue() < CInteger($condGrid[i, 3]) THEN 
+                    execConditionalGrid($condGrid[i, 4], $condGrid[i, 5])
+                  ENDIF 
+    
+                CASE "BATTERY >="
+                  IF NOT FMain.isAdapter() AND FMain.getBatteryValue() >= CInteger($condGrid[i, 3]) THEN 
+                    execConditionalGrid($condGrid[i, 4], $condGrid[i, 5])
+                  ENDIF 
+    
+                CASE "BATTERY <="
+                  IF NOT FMain.isAdapter() AND FMain.getBatteryValue() <= CInteger($condGrid[i, 3]) THEN 
+                    execConditionalGrid($condGrid[i, 4], $condGrid[i, 5])
+                  ENDIF 
+    
+                CASE "BATTERY =="
+                  IF NOT FMain.isAdapter() AND FMain.getBatteryValue() = CInteger($condGrid[i, 3]) THEN 
+                    execConditionalGrid($condGrid[i, 4], $condGrid[i, 5])
+                  ENDIF 
+    
+                CASE "BATTERY !="
+                  IF NOT FMain.isAdapter() AND FMain.getBatteryValue() <> CInteger($condGrid[i, 3]) THEN 
+                    execConditionalGrid($condGrid[i, 4], $condGrid[i, 5])
+                  ENDIF 
+    'vyresit dilema kolem zmeny vystupu obrazovky
+    'protoze pokud se obrazovk zmeni, a pak se pri usporaku vytahne konektor
+    'tak se obrazovak nekokaze sama vratit
+    'tzn ze pokud probehne zmena xrandru tak se zmenila(pripojeni/odpojeni) obrazovka
+    'SCREEN is
+    'SCREEN is not
+    '//RUN SHELL
+    '//RUN SHELL
+    'DEBUG $condGrid[i, 2], FMain.getBatteryValue()
+    'execConditionalGrid($condGrid[i, 3], $condGrid[i, 4])
+    'DEBUG CInteger($condGrid[i, 2]), FMain.getBatteryValue()
+    
+              END SELECT 'end select 1
+        END SELECT  'end select 0
+      ENDIF 'end if enabled
+  'DEBUG $condGrid[i, 1]
+    NEXT 'end for cyklus
   ENDIF 
 END
 
 
-PRIVATE SUB renderTask()
-  DIM item AS String
-  tasklist.Clear
-  FOR EACH item IN $tasks
-    tasklist.Add(item)
-  NEXT
+PRIVATE SUB execConditionalGrid(action AS String, actionValue AS String)
+  SELECT CASE action
+    CASE "POWERSAVE"
+      FMain.setGovernor(actionValue)
+    CASE "CONTRAST"
+      FMain.setJas(CInteger(actionValue))
+    CASE "MESSAGE"
+      IF NOT $zobrazeno THEN 
+        $zobrazeno = TRUE
+        IF Message(actionValue) THEN $zobrazeno = FALSE
+      ENDIF 
+    CASE "SHELL"  'tyto prikazy volit strasne obezretne!
+      DEBUG actionValue
+      TRY SHELL actionValue WAIT
+  END SELECT 
+'DEBUG action, actionValue
 END
 
 
-PRIVATE SUB saveTask()
-  DIM item AS String
-  DIM index AS Integer
-  'ulozeni task
-  Settings["settings/taskcount"] = $tasks.length
-  FOR EACH item IN $tasks
-    Settings["settings/task" & index] = item
-    INC index
-  NEXT 
+PRIVATE SUB renderGrid()
+  DIM x, y, w, h, row, i AS Integer
+  DIM rowText, item AS String
+  DIM items AS String[]
+  row = conditionalGrid.Row
+
+  IF row > -1 THEN
+    conditionalGrid.ScrollX = 0 'zaruceni neuskakovani scrollu do prava
+    enableCheck.Visible = TRUE
+    typeCombo.Visible = TRUE
+    devCombo.Visible = TRUE
+    valueCheck.Visible = TRUE
+    valueSpin.Visible = TRUE
+    valueText.Visible = TRUE
+    valueCombo.Visible = TRUE
+    actionCombo.Visible = TRUE
+    actionValueText.Visible = TRUE
+    actionValueSpin.Visible = TRUE
+    actionValueCombo.Visible = TRUE
+    actionValueCheck.Visible = TRUE
+    saveButton.Visible = TRUE
+    deleteButton.Visible = TRUE
+
+    FOR i = 0 TO conditionalGrid.Columns.Count - 1
+      x = conditionalGrid[row, i].X + conditionalGrid.X
+      y = conditionalGrid[row, i].Y + conditionalGrid.Y
+      w = conditionalGrid[row, i].W
+      h = conditionalGrid[row, i].H
+
+      rowText = IIf(conditionalGrid[row, i].Text, conditionalGrid[row, i].Text, "")
+'TODO moznost povolovat a zakazovat!!!!!!
+      SELECT CASE i
+        CASE 0
+          enableCheck.Value = (rowText = "X")
+          enableCheck.Move(x, y, w, h)
+
+        CASE 1
+          typeCombo.Text = rowText
+          typeCombo.Move(x, y, w, h)
+
+        CASE 2
+          devCombo.Text = rowText
+          devCombo.Move(x, y, w, h)
+
+        CASE 3
+          SELECT CASE devCombo.Text 'podle devCombo se voli typ
+            'spinbox
+            CASE "BATTERY >", "BATTERY <", "BATTERY >=", "BATTERY <=", "BATTERY ==", "BATTERY !=" '+pokud je adapter pritomen!
+              valueCheck.Visible = FALSE
+              valueSpin.Value = CInteger(IIf(IsDigit(rowText), rowText, 0))
+              valueSpin.Move(x, y, w, h)
+              valueText.Visible = FALSE 'TODO momentalne nevyuzito
+              valueCombo.Visible = FALSE
+            'checkbox
+            CASE "ADAPTER is" ', "TOUCHEPAD"
+              valueCheck.Text = IIf(rowText, rowText, "OFF")
+              valueCheck.Value = IIf(rowText = "ON", TRUE, FALSE)
+              valueCheck.Move(x, y, w, h)
+              valueSpin.Visible = FALSE
+              valueText.Visible = FALSE
+              valueCombo.Visible = FALSE
+            'selectbox
+            CASE "SCREEN is", "SCREEN conn", "SCREEN disconn" 'je dostupna obrazovka, pripoji se obrazovka, odpoji se obrazovka
+              valueCheck.Visible = FALSE
+              valueSpin.Visible = FALSE
+              valueText.Visible = FALSE
+              valueCombo.List = FMain.getListScreen() 'nacte seznam pripojenych obrazovek
+              valueCombo.Text = rowText 'nastaveni polozky jako 2.
+              valueCombo.Move(x, y, w, h)
+            'textbox
+            ' CASE "NETWORK"
+            '   valueCheck.Visible = FALSE
+            '   valueSpin.Visible = FALSE
+            '   valueText.Move(x, y, w, h)
+            'vychozi
+            DEFAULT 
+              valueCheck.Visible = FALSE
+              valueSpin.Visible = FALSE
+              valueText.Visible = FALSE
+              valueCombo.Visible = FALSE
+          END SELECT 
+
+        CASE 4
+          actionCombo.Text = rowText
+          actionCombo.Move(x, y, w, h)
+
+        CASE 5
+          SELECT CASE actionCombo.Text
+            CASE "CONTRAST"
+              actionValueText.Visible = FALSE
+              actionValueSpin.Value = CInteger(IIf(IsDigit(rowText), rowText, 0))
+              actionValueSpin.Move(x, y, w, h)
+              actionValueCombo.Visible = FALSE
+              actionValueCheck.Visible = FALSE
+
+            CASE "POWERSAVE"
+              actionValueText.Visible = FALSE
+              actionValueSpin.Visible = FALSE
+              actionValueCombo.List = FMain.governorText
+              actionValueCombo.Text = rowText 'nastaveni polozky jako 2.
+              actionValueCombo.Move(x, y, w, h)
+              actionValueCheck.Visible = FALSE
+
+            CASE "XRANDR"
+              actionValueText.Visible = FALSE
+              actionValueSpin.Visible = FALSE
+              items = ["AUTO", "OFF"]
+              FOR EACH item IN FMain.getListScreen()
+                items.Add("AUTO:" & item)
+                items.Add("OFF:" & item)
+              NEXT
+              actionValueCombo.List = items.Sort()  'seradi polozky
+              actionValueCombo.Text = rowText 'nastaveni polozky jako 2.
+              actionValueCombo.Move(x, y, w, h)
+              actionValueCheck.Visible = FALSE
+
+            CASE "TOUCHEPAD"
+              actionValueText.Visible = FALSE
+              actionValueSpin.Visible = FALSE
+              actionValueCombo.Visible = FALSE
+              actionValueCheck.Text = IIf(rowText, rowText, "OFF")
+              actionValueCheck.Value = IIf(rowText = "ON", TRUE, FALSE)
+              actionValueCheck.Move(x, y, w, h)
+
+            'textbox
+            CASE "MESSAGE", "SHELL"
+              actionValueText.Text = rowText
+              actionValueText.Move(x, y, w, h)
+              actionValueSpin.Visible = FALSE
+              actionValueCombo.Visible = FALSE
+              actionValueCheck.Visible = FALSE
+
+            DEFAULT 
+              actionValueText.Visible = FALSE
+              actionValueSpin.Visible = FALSE
+              actionValueCombo.Visible = FALSE
+              actionValueCheck.Visible = FALSE
+          END SELECT 
+
+        CASE 6
+          saveButton.Move(x, y, w, h)
+
+        CASE 7
+          deleteButton.Move(x, y, w, h)
+          deleteButton.Enabled = (row = conditionalGrid.Rows.Count - 1) 'mementalne mazat jen od konce
+      END SELECT 
+    NEXT 
+  ENDIF
 END
 
 
-PRIVATE SUB loadTask()
-  DIM count, i AS Integer
-  $tasks.Clear
-  count = Settings["settings/taskcount", 0]
-  FOR i = 0 TO count - 1
-    $tasks.Add(Settings["settings/task" & i, ""])
-  NEXT 
-  renderTask()
+PUBLIC SUB conditionalGrid_MouseUp()
+  renderGrid()
 END
 
+
+PUBLIC SUB conditionalGrid_Scroll()
+  renderGrid()
+END
+
+
+PUBLIC SUB conditionalGrid_KeyRelease()
+  renderGrid()
+END
+
+'enable
+PUBLIC SUB enableCheck_Click()
+  conditionalGrid[conditionalGrid.Row, 0].Text = IIf(enableCheck.Value, "X", "")
+END
+
+'type
+PUBLIC SUB typeCombo_Click()
+  conditionalGrid[conditionalGrid.Row, 1].Text = typeCombo.Text
+END
+
+'dev
+PUBLIC SUB devCombo_Click()
+  conditionalGrid[conditionalGrid.Row, 2].Text = devCombo.Text
+  renderGrid()
+END
+
+'value - 0
+PUBLIC SUB valueCheck_Click()
+  valueCheck.Text = IIf(valueCheck.Value, "ON", "OFF")
+  conditionalGrid[conditionalGrid.Row, 3].Text = valueCheck.Text
+END
+
+'value - 1
+PUBLIC SUB valueSpin_Change()
+  conditionalGrid[conditionalGrid.Row, 3].Text = CString(valueSpin.Value)
+END
+
+'value - 2
+PUBLIC SUB valueText_Change()
+  conditionalGrid[conditionalGrid.Row, 3].Text = valueText.Text
+END
+
+'value - 3
+PUBLIC SUB valueCombo_Click()
+  conditionalGrid[conditionalGrid.Row, 3].Text = valueCombo.Text
+END
+
+'action
+PUBLIC SUB actionCombo_Click()
+  conditionalGrid[conditionalGrid.Row, 4].Text = actionCombo.Text
+  renderGrid()
+END
+
+'actionValue - 0
+PUBLIC SUB actionValueText_Change()
+  conditionalGrid[conditionalGrid.Row, 5].Text = actionValueText.Text
+END
+
+'actionValue - 1
+PUBLIC SUB actionValueSpin_Change()
+  conditionalGrid[conditionalGrid.Row, 5].Text = CString(actionValueSpin.Value)
+END
+
+'actionValue - 2
+PUBLIC SUB actionValueCombo_Click()
+  conditionalGrid[conditionalGrid.Row, 5].Text = actionValueCombo.Text
+END
+
+'actionValue - 3
+PUBLIC SUB actionValueCheck_Click()
+  actionValueCheck.Text = IIf(actionValueCheck.Value, "ON", "OFF")
+  conditionalGrid[conditionalGrid.Row, 5].Text = actionValueCheck.Text
+END
+
+
+PUBLIC SUB batteryCheck_Click()
+  batteryShowCombo.Enabled = batteryCheck.Value
+END
+
+
+PUBLIC SUB addRowButton_Click()
+  conditionalGrid.Rows.Count += 1
+END
+
+
+PUBLIC SUB saveButton_Click()
+  DIM i AS Integer
+  DIM row AS Integer = conditionalGrid.Row
+  DIM rowText AS String
+
+  IF row > -1 THEN
+    FOR i = 0 TO conditionalGrid.Columns.Count - 1
+      SELECT CASE i
+        'CASE 0
+        '  rowText = enableCheck.Value
+        'CASE 1
+        '  rowText = typeCombo.Text
+        'CASE 2
+        '  rowText = devCombo.Text
+        CASE 3
+          SELECT CASE devCombo.Text
+            CASE "ADAPTER is"
+              rowText = valueCheck.Text
+            CASE "SCREEN is", "SCREEN conn", "SCREEN disconn"
+              rowText = valueCombo.Text
+            DEFAULT 
+              rowText = CString(valueSpin.Value)
+          END SELECT 
+        'CASE 4
+        '  rowText = actionCombo.Text
+        CASE 5
+          SELECT CASE actionCombo.Text
+            CASE "CONTRAST"
+              rowText = CString(actionValueSpin.Text)
+            CASE "POWERSAVE", "XRANDR"
+              rowText = actionValueCombo.Text
+            CASE "TOUCHEPAD"
+              rowText = actionValueCheck.Text
+            CASE "MESSAGE", "SHELL"
+              rowText = actionValueText.Text
+          END SELECT 
+        DEFAULT 
+          rowText = conditionalGrid[row, i].Text
+      END SELECT 
+      conditionalGrid[row, i].Text = rowText
+    NEXT
+
+    hideComponentRow()
+  ENDIF 
+END
+
+'skryti komponent radku
+PRIVATE SUB hideComponentRow()
+  enableCheck.Visible = FALSE
+  typeCombo.Visible = FALSE
+  devCombo.Visible = FALSE
+  valueCheck.Visible = FALSE
+  valueSpin.Visible = FALSE
+  valueText.Visible = FALSE
+  valueCombo.Visible = FALSE
+  actionCombo.Visible = FALSE
+  actionValueText.Visible = FALSE
+  actionValueSpin.Visible = FALSE
+  actionValueCombo.Visible = FALSE
+  actionValueCheck.Visible = FALSE
+  saveButton.Visible = FALSE
+  deleteButton.Visible = FALSE
+END
+
+
+PUBLIC SUB deleteButton_Click()
+  DIM i AS Integer
+  DIM row AS Integer = conditionalGrid.Row
+  IF row > -1 THEN
+  'FIXME vyresit mazani z prostred!
+    IF Message.Delete(("Opravdu smazat tuto podmíněnou podmínku?"), ("Ano"), ("Ne")) = 1 THEN 
+      'vymazani textu z radku
+      FOR i = 0 TO conditionalGrid.Columns.Count - 1
+        conditionalGrid[row, i].Text = ""
+      NEXT
+      Message.Info(("Položka smazána"))
+      conditionalGrid.Rows.Count -= 1 'odecte posleni radek
+    ENDIF
+    hideComponentRow()
+  ENDIF 
+END

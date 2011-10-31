@@ -2,8 +2,10 @@
 
 { Form Form
   MoveScaled(0,0,85,78.5714)
-  Text = ("")
+  Text = ("Ubuntu Mobile center")
   Icon = Picture["ikony/aplikace.png"]
+  Border = Window.Fixed
+  Sticky = True
   { panel_jas Panel
     MoveScaled(1,1,20,17)
     Border = Border.Etched
@@ -88,16 +90,19 @@
       }
       { profileselect ComboBox
         MoveScaled(0,3,28,3)
+        Enabled = False
         Text = ("")
         ReadOnly = True
         List = []
       }
       { profileload Button
         MoveScaled(0,7,13,3)
+        Enabled = False
         Text = ("Na\xC4\x8D\xC3\xADst")
       }
       { profilesave Button
         MoveScaled(14,7,14,3)
+        Enabled = False
         Text = ("Ulo\xC5\xBEit")
       }
     }
@@ -141,8 +146,12 @@
       Alignment = Align.Left
     }
     { Label8 Label
-      MoveScaled(2,13,15,3)
+      MoveScaled(2,13,14,3)
       Text = ("\xC5\x98\xC3\xADzen\xC3\xAD v\xC3\xBDkonu:")
+    }
+    { governorLabel Label
+      MoveScaled(17,13,23,3)
+      Text = ("...")
     }
   }
   { panel_touchpad Panel
@@ -392,6 +401,12 @@
           AutoResize = True
           Text = ("xx kX/s")
         }
+      }
+      { aboutButton Button
+        MoveScaled(62,5,4,3)
+        ToolTip = ("Verze programu")
+        Text = ("")
+        Picture = Picture["icon:/small/info"]
       }
     }
   }

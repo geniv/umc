@@ -1,27 +1,35 @@
 # Gambas Form File 2.0
 
 { Form Form
-  MoveScaled(0,0,64,25)
-  Text = ("")
+  MoveScaled(0,0,83,55)
+  Text = ("Nastaven\xC3\xAD UMC")
+  Border = Window.Fixed
   { manager TextBox
-    MoveScaled(1,6,24,3)
+    MoveScaled(1,4,24,3)
     Text = ("nautilus")
   }
   { tasklist ListBox
-    MoveScaled(28,6,34,16)
+    MoveScaled(39,6,34,16)
+    Visible = False
+    Enabled = False
   }
   { tasknew Button
-    MoveScaled(47,1,15,3)
+    MoveScaled(58,1,15,3)
+    Visible = False
+    Enabled = False
     Text = ("nova uloha")
   }
   { Label1 Label
-    MoveScaled(28,2,17,3)
+    MoveScaled(39,2,17,3)
+    Visible = False
+    Enabled = False
     AutoResize = True
     Text = ("Ulohy po spusteni")
   }
   { taskframe Frame
-    MoveScaled(33,6,29,7)
+    MoveScaled(44,6,29,7)
     Visible = False
+    Enabled = False
     Text = ("P\xC5\x99idat ulohu")
     { taskinput TextBox
       MoveScaled(1,3,24,3)
@@ -34,8 +42,137 @@
     }
   }
   { Label2 Label
-    MoveScaled(1,2,22,3)
+    MoveScaled(1,1,22,3)
     AutoResize = True
     Text = ("Souborov\xC3\xBD mana\xC5\xBEer:")
+  }
+  { minimizeTrayCheck CheckBox
+    MoveScaled(1,8,24,3)
+    Text = ("Minimalizovat do Tray")
+  }
+  { batteryCheck CheckBox
+    MoveScaled(1,12,25,3)
+    Text = ("Zobrazovat baterii v Tray")
+  }
+  { batteryShowCombo ComboBox
+    MoveScaled(3,16,23,3)
+    Text = ("- kdy\xC5\xBE je p\xC5\x99\xC3\xADtomna baterie")
+    ReadOnly = True
+    List = [("- st\xC3\xA1le"), ("- pokud se vybij\xC3\xAD"), ("- pokud se nabij\xC3\xAD"), ("- pokud se nabij\xC3\xAD / vybij\xC3\xAD"), ("- pokud je p\xC5\x99\xC3\xADtomna")]
+  }
+  { Label4 Label
+    MoveScaled(3,29,24,3)
+    Text = ("Podm\xC3\xADn\xC4\x9Bn\xC3\xA9 nastavov\xC3\xA1n\xC3\xAD:")
+  }
+  { CheckBox3 CheckBox
+    MoveScaled(42,23,24,3)
+    Visible = False
+    Text = ("Pt\xC3\xA1t se p\xC5\x99i ukon\xC4\x8Den\xC3\xAD")
+  }
+  { timerSpin SpinBox
+    MoveScaled(18,20,11,3)
+    MinValue = 100
+    MaxValue = 100000
+    Step = 100
+    Value = 10000
+  }
+  { Label5 Label
+    MoveScaled(1,20,17,3)
+    Text = ("Interval \xC4\x8Dasova\xC4\x8De")
+  }
+  { addRowButton Button
+    MoveScaled(79,29,3,3)
+    Text = ("+")
+  }
+  { obalPanel Panel
+    MoveScaled(1,33,81,21)
+    { conditionalGrid GridView
+      MoveScaled(0,0,81,21)
+      Mode = Select.Single
+      Scrollbar = Scroll.Vertical
+    }
+    { typeCombo ComboBox
+      MoveScaled(4,4,12,3)
+      Visible = False
+      Text = ("...")
+      ReadOnly = True
+      List = [("IF"), ("//CMD"), ("")]
+    }
+    { devCombo ComboBox
+      MoveScaled(17,4,13,3)
+      Visible = False
+      Text = ("...")
+      ReadOnly = True
+      List = [("BATTERY >"), ("BATTERY <"), ("BATTERY >="), ("BATTERY <="), ("BATTERY =="), ("BATTERY !="), ("ADAPTER is"), ("")]
+    }
+    { valueCheck CheckBox
+      MoveScaled(32,4,9,3)
+      Visible = False
+      Text = ("OFF")
+    }
+    { valueSpin SpinBox
+      MoveScaled(32,8,9,3)
+      Visible = False
+    }
+    { valueText TextBox
+      MoveScaled(32,12,9,3)
+      Visible = False
+      Text = ("")
+    }
+    { actionCombo ComboBox
+      MoveScaled(43,4,12,3)
+      Visible = False
+      Text = ("ComboBox1")
+      ReadOnly = True
+      List = [("CONTRAST"), ("POWERSAVE"), ("TOUCHEPAD"), ("MESSAGE"), ("XRANDR"), ("SHELL"), ("")]
+    }
+    { actionValueText TextBox
+      MoveScaled(59,4,9,3)
+      Visible = False
+      Text = ("")
+    }
+    { saveButton Button
+      MoveScaled(72,4,3,2)
+      Visible = False
+      Text = ("")
+      Picture = Picture["icon:/small/save"]
+    }
+    { deleteButton Button
+      MoveScaled(76,4,3,3)
+      Visible = False
+      Text = ("")
+      Picture = Picture["icon:/small/delete"]
+    }
+    { valueCombo ComboBox
+      MoveScaled(32,16,9,3)
+      Visible = False
+      Text = ("ComboBox1")
+      ReadOnly = True
+    }
+    { actionValueSpin SpinBox
+      MoveScaled(59,8,9,3)
+      Visible = False
+    }
+    { actionValueCombo ComboBox
+      MoveScaled(59,12,9,3)
+      Visible = False
+      Text = ("ComboBox1")
+      ReadOnly = True
+    }
+    { actionValueCheck CheckBox
+      MoveScaled(59,16,9,3)
+      Visible = False
+      Text = ("OFF")
+    }
+    { enableCheck CheckBox
+      MoveScaled(1,4,2,3)
+      Visible = False
+      Text = ("")
+    }
+  }
+  { backupButton Button
+    MoveScaled(61,29,16,3)
+    Visible = False
+    Text = ("Z\xC3\xA1lohovat")
   }
 }
