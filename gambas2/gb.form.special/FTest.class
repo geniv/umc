@@ -1,0 +1,23 @@
+' Gambas class file
+
+PUBLIC SUB _new()
+
+END
+
+PUBLIC SUB Form_Open()
+  'DIM pokus AS PictureCheckBox
+  'PictureCheckBox1.Tex
+
+  ' pokus = NEW PictureCheckBox(ME)
+  ' pokus.Move(10, 10, 100, 30)
+  ' pokus.PictureTrue = Picture["icon:/32/access"]
+  ' pokus.PictureFalse = Picture["icon:/32/add"]
+END
+
+' PUBLIC SUB PictureCheckBox1_Click()
+' 
+'   'PictureCheckBox1.Value = NOT PictureCheckBox1.Value
+'   Label1.Text = Label1.Text & ","
+' 
+' END
+

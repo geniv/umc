@@ -1,0 +1,15 @@
+# Gambas Project File 2.0
+# Compiled with Gambas 2.22.0
+Title=gb.form.special
+Startup=FTest
+Version=0.0.29
+Library=gb.qt
+Library=gb.form
+Library=gb.qt.ext
+Library=gb.form.special
+Description=special forms components
+Authors=geniv (geniv.radek@gmail.com), kubijo (kubijo@gmail.com)
+TabSize=2
+CreateShortcut=1
+MakeComponent=1
+State=2

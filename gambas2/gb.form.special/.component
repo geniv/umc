@@ -1,0 +1,10 @@
+[Component]
+Key=gb.form.special
+Version=0.0.29
+State=2
+Authors=geniv (geniv.radek@gmail.com), kubijo (kubijo@gmail.com)
+Needs=Form
+
+[Form]
+Control=PictureCheckBox
+

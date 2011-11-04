@@ -1,0 +1,17 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,50,28)
+  Text = ("")
+  { Label1 Label
+    MoveScaled(1,18,45,3)
+    Text = (".")
+  }
+  { PictureCheckBox1 PictureCheckBox
+    MoveScaled(5,2,24,10)
+    PictureTrue = Picture["icon:/32/apply"]
+    PictureFalse = Picture["icon:/32/cancel"]
+    ToolTipTrue = "true"
+    ToolTipFalse = "flasee"
+  }
+}

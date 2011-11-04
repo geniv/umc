@@ -1,0 +1,139 @@
+' Gambas class file
+
+INHERITS UserContainer
+EXPORT
+
+PUBLIC CONST _Properties AS String = "*,PictureTrue,PictureFalse,Value,Stretch,-Font,-ToolTip,ToolTipTrue,ToolTipFalse,TextTrue,TextFalse"
+
+PUBLIC CONST _DefaultEvent AS String = "Click"
+
+'PUBLIC CONST _DrawWith AS String = "CheckBox"
+
+EVENT Click
+
+PROPERTY PictureTrue AS Picture
+PROPERTY PictureFalse AS Picture
+PROPERTY Value AS Boolean
+PROPERTY Stretch AS Boolean
+PROPERTY ToolTipTrue AS String
+PROPERTY ToolTipFalse AS String
+PROPERTY READ Text AS String
+PROPERTY TextTrue AS String
+PROPERTY TextFalse AS String
+
+PRIVATE $pictureTrue AS Picture
+PRIVATE $pictureFalse AS Picture
+PRIVATE $value AS Boolean = TRUE
+PRIVATE $stretch AS Boolean = FALSE
+
+PRIVATE $text AS String
+PRIVATE $texttrue AS String
+PRIVATE $textfalse AS String
+
+PRIVATE $tooltiptrue AS String
+PRIVATE $tooltipfalse AS String
+
+
+PRIVATE $picture AS PictureBox
+
+PUBLIC SUB _new()
+  $picture = NEW PictureBox(ME) AS "PicturePanel"
+END
+
+PRIVATE SUB renderPicture()
+  $picture.Stretch = $stretch
+  IF $value THEN 
+    $picture.Picture = $pictureTrue
+    $picture.ToolTip = $tooltiptrue
+    $text = $texttrue
+      ELSE 
+    $picture.Picture = $pictureFalse
+    $picture.ToolTip = $tooltipfalse
+    $text = $textfalse
+  ENDIF
+END
+
+
+PRIVATE FUNCTION PictureTrue_Read() AS Picture
+  RETURN $pictureTrue
+END
+
+PRIVATE SUB PictureTrue_Write(Value AS Picture)
+  $pictureTrue = Value
+  renderPicture()
+END
+
+PRIVATE FUNCTION PictureFalse_Read() AS Picture
+  RETURN $pictureFalse
+END
+
+PRIVATE SUB PictureFalse_Write(Value AS Picture)
+  $pictureFalse = Value
+  renderPicture()
+END
+
+PUBLIC SUB PicturePanel_MouseUp()
+  IF Mouse.Left THEN 
+    $value = NOT $value 
+    renderPicture()
+    RAISE Click
+  ENDIF 
+END
+
+PRIVATE FUNCTION Value_Read() AS Boolean
+  RETURN $value
+END
+
+PRIVATE SUB Value_Write(Value AS Boolean)
+  $value = Value
+  renderPicture()
+END
+
+PRIVATE FUNCTION TextTrue_Read() AS String
+  RETURN $texttrue
+END
+
+PRIVATE SUB TextTrue_Write(Value AS String)
+  $texttrue = Value
+  'renderPicture()
+END
+
+PRIVATE FUNCTION TextFalse_Read() AS String
+  RETURN $textfalse
+END
+
+PRIVATE SUB TextFalse_Write(Value AS String)
+  $textfalse = Value
+  'renderPicture()
+END
+
+PRIVATE FUNCTION Stretch_Read() AS Boolean
+  RETURN $stretch
+END
+
+PRIVATE SUB Stretch_Write(Value AS Boolean)
+  $stretch = Value
+  renderPicture()
+END
+
+PRIVATE FUNCTION ToolTipTrue_Read() AS String
+  RETURN $tooltiptrue
+END
+
+PRIVATE SUB ToolTipTrue_Write(Value AS String)
+  $tooltiptrue = Value
+  renderPicture()
+END
+
+PRIVATE FUNCTION ToolTipFalse_Read() AS String
+  RETURN $tooltipfalse
+END
+
+PRIVATE SUB ToolTipFalse_Write(Value AS String)
+  $tooltipfalse = Value
+  renderPicture()
+END
+
+PRIVATE FUNCTION Text_Read() AS String
+  RETURN $text
+END
