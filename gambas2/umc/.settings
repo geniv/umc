@@ -22,16 +22,10 @@ Geometry=[14,14,301,301]
 [DebugWindow/Application.ToolTip.Font]
 Geometry=[28,28,301,301]
 
-[DebugWindow/Balloon]
-Geometry=[0,0,301,301]
-
 [DebugWindow/CheckBox1]
 Geometry=[0,0,301,301]
 
 [DebugWindow/FMain]
-Geometry=[0,0,301,301]
-
-[DebugWindow/FMain.getListMixer()]
 Geometry=[0,0,301,301]
 
 [DebugWindow/FMain.getListScreen()]
@@ -97,8 +91,8 @@ SearchString=True
 
 [OpenFile]
 File[1]="FMain.form"
-File[2]="FMain.class:670.40"
-File[3]="FSettings.class:636.0"
+File[2]="FMain.class:439.25"
+File[3]="FSettings.class:608.0"
 Active=3
 File[4]="FSettings.form"
 Count=4

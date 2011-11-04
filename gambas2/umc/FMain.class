@@ -106,7 +106,12 @@ PRIVATE SUB existJas() AS Boolean
 '/proc/acpi/video$ find . -name brightness -print -exec cat {} \;
   'SHELL "echo -n $( cat /proc/acpi/video/VGA/$( ls /proc/acpi/video/VGA/ | grep LCD )/brightness )" WAIT TO ret_shell
   'RETURN IIf(ret_shell = "<not supported>", FALSE, TRUE)
-  RETURN TRUE 'mozna jen v budoucnu tesotvat pripojeni dbus sbernice
+  
+  DIM ret_shell AS String
+  SHELL "echo -n $( qdbus org.gnome.PowerManager /org/gnome/PowerManager/Backlight GetBrightness )" WAIT TO ret_shell
+  RETURN IsDigit(ret_shell)
+  
+  'RETURN TRUE 'mozna jen v budoucnu tesotvat pripojeni dbus sbernice
 END
 
 PRIVATE SUB existHlasitost() AS Boolean
@@ -380,8 +385,12 @@ END
 
 PUBLIC SUB getGovernor() AS Integer
   DIM ret_shell AS String
-  SHELL "echo -n $( cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor )" WAIT TO ret_shell
-  RETURN governor.Find(ret_shell)
+  IF Exist("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor") THEN 
+    SHELL "echo -n $( cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor )" WAIT TO ret_shell
+    RETURN governor.Find(ret_shell)
+      ELSE 
+    RETURN -1
+  ENDIF 
 END
 
 
@@ -416,9 +425,11 @@ PRIVATE SUB nactiCpu()
   cpu_pocet.Text = Subst(("Počet jader: &1"), ret_shell)
 
 ''conservative ondemand userspace powersave performance
-  SHELL "echo -n $( cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor )" TO ret_shell
-  cpuselect.Index = governor.Find(ret_shell)  'nacteni aktualiho indexu governor
-  governorLabel.Text = governorText[cpuselect.Index]
+  IF Exist("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor") THEN 
+    SHELL "echo -n $( cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor )" TO ret_shell
+    cpuselect.Index = governor.Find(ret_shell)  'nacteni aktualiho indexu governor
+    governorLabel.Text = governorText[cpuselect.Index]
+  ENDIF 
 END
 
 'nacte informace z utility pro uptime
@@ -480,7 +491,7 @@ PUBLIC SUB casovac_Timer()
   IF existTouchepad() THEN nactiTouchpad()
   'IF existCpu() THEN nactiCpu()
 
-  IF existCpu() THEN governorLabel.Text = governorText[getGovernor()]
+  IF existCpu() AND getGovernor() <> -1 THEN governorLabel.Text = governorText[getGovernor()]
 
   IF existAcpi() THEN nactiBaterii()
   IF existUptime() THEN nactiUptime()
