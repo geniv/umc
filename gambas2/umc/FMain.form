@@ -169,7 +169,7 @@
     { touchpad_start_stop Button
       MoveScaled(2,12,16,3)
       ToolTip = ("Otev\xC5\x99e okno s nastaven\xC3\xADm deformace obrazu")
-      Text = ("Start / Stop")
+      Text = ("Povolit")
     }
   }
   { panel_manager Panel

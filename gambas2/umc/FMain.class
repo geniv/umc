@@ -11,18 +11,26 @@ PRIVATE $profiles AS NEW String[]
 'pole governor pro cpu
 PRIVATE governor AS String[] = ["conservative", "ondemand", "performance", "powersave"]
 PUBLIC governorText AS String[] = [("Konzervativně"), ("Podle poptávky"), ("Vysoký výkon"), ("Nízká spotřeba")]
+PRIVATE $cpugovernor AS Boolean = TRUE
 
 'vnitrni promenn pro gettry
 PRIVATE $onlineBat AS Boolean
 PRIVATE $batteryVal AS Integer
 
+'                                  1       2     3        4         5      6       7        8                 9            10        11          12        13          14       15      16      17      18          19
+PRIVATE $bashapp AS String[] = ["qdbus", "ps", "grep", "which", "acpi", "uptime", "ip", "cpufreq-selector", "apache2", "dropbox", "shutdown", "xrandr", "synclient", "amixer", "awk", "echo", "cat", "gksudo", "killall"]
+'                                   1      2     3     4     5      6    7      8       9     10    11    12     13     14    15     16    17    18    19
+PRIVATE $necessary AS Byte[] = [TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE] 'potrebne=true
+
 PRIVATE tray AS TrayIcon
 
 PUBLIC SUB _new()
-  DIM pocet, pid AS Integer
+  DIM pocet, pid, i AS Integer
+  DIM item, ret AS String
 
   obrazek_jas.Picture = Picture["ikony/jas.png"]
   obrazek_zvuk.Picture = Picture["ikony/sound.png"]
+  obrazek_touchpad.Picture = Picture["ikony/touchpad-disable-icon.png"]
   obrazek_manager.Picture = Picture["ikony/file_manager.png"]
   obrazek_apache.Picture = Picture["ikony/apache.png"]
   obrazek_drop.Picture = Picture["ikony/dropbox.png"]
@@ -37,9 +45,26 @@ PUBLIC SUB _new()
 '   DEBUG Message.Question(("program již běží. Opravdu spustit znovu?"), ("spustit"), ("ukončit!"))
 ' ENDIF 
 
-  ' IF Application.Args[1] = "--help" THEN 
-  '   PRINT "ahoj, snazis se ziskat napovedu?? ale marne!!"
-  ' ENDIF 
+
+  IF Application.Args.Count > 1 THEN 
+    IF Application.Args[1] = "--help" OR Application.Args[1] = "-h" THEN 
+      PRINT ("Konzolová nápověda k programu UMC")
+      PRINT ("Pro zobrazení této nápovědy se užívá: --help nebo -h")
+      PRINT ("Pro výpis potřebných konzolových aplikací je paramtr: --list nebo -l")
+    ENDIF 
+
+    IF Application.Args[1] = "--list" OR Application.Args[1] = "-l" THEN 
+      PRINT ("Seznam dostupných a potřebných konzolových aplikací:")
+      FOR EACH item IN $bashapp
+        TRY SHELL Subst("echo -n $( which &1 )", item) WAIT TO ret
+        PRINT Subst(("&1 - &2 - &3"), item, ret, IIf(ret, ("OK"), IIf($necessary[i] = 255, ("Chybi"), ("Není nutné"))))
+        i += 1
+      NEXT
+    ENDIF 
+
+    ME.Close()
+    RETURN 
+  ENDIF 
 
   'kontrola znovu spusteni
 
@@ -69,6 +94,9 @@ PUBLIC SUB _new()
   'TODO v mastaveni seznam prikazu ktere se maji spustit po spusteni umc na konzole
   ''ukladat toto nataveni do ini!
   '$ qdbusviewer
+  
+''potrebne utility:
+'qdbus, ps, grep, which, acpi, uptime, ip, cpufreq-selector, apache2, dropbox, shutdown, xrandr, synclient, amixer, awk ,echo, cat, gksudo, killall
 
   'kontrola existenci jednotliych utilit
   panel_jas.Enabled = existJas()
@@ -82,6 +110,12 @@ PUBLIC SUB _new()
   panel_dropbox.Enabled = existDropbox()
 
   cpuselect.List = governorText
+  IF getGovernor() = -1 THEN 
+    governorLabel.Text = ("Nelze měnit výkon")
+    cpuselect.Enabled = FALSE
+    cpuset.Enabled = FALSE
+    $cpugovernor = FALSE
+  ENDIF 
 END
 
 PRIVATE SUB setPID()
@@ -114,7 +148,7 @@ END
 
 PRIVATE SUB existTouchepad() AS Boolean
   DIM ret_shell AS String
-  TRY SHELL "which synclient" WAIT TO ret_shell
+  TRY SHELL "synclient -l | grep TouchpadOff" WAIT TO ret_shell
   RETURN ret_shell
 END
 
@@ -167,6 +201,12 @@ END
 PRIVATE SUB existShutdown() AS Boolean
   DIM ret_shell AS String
   TRY SHELL "which shutdown" WAIT TO ret_shell
+  RETURN ret_shell
+END
+
+PRIVATE SUB existXrandr() AS Boolean
+  DIM ret_shell AS String
+  TRY SHELL "which xrandr" WAIT TO ret_shell
   RETURN ret_shell
 END
 
@@ -229,7 +269,7 @@ PUBLIC SUB Form_Close()
 END
 
 PRIVATE SUB initXrandr()
-  TRY SHELL "xrandr > /dev/null"
+  IF existXrandr() THEN TRY SHELL "xrandr > /dev/null"
 END
 
 
@@ -481,7 +521,7 @@ PUBLIC SUB casovac_Timer()
   IF existTouchepad() THEN nactiTouchpad()
   'IF existCpu() THEN nactiCpu()
 
-  IF existCpu() AND getGovernor() <> -1 THEN governorLabel.Text = governorText[getGovernor()]
+  IF existCpu() AND $cpugovernor THEN governorLabel.Text = governorText[getGovernor()]
 
   IF existAcpi() THEN nactiBaterii()
   IF existUptime() THEN nactiUptime()
@@ -607,10 +647,10 @@ PUBLIC SUB nactiSit()
   sit_active.Text = Subst(("Síť: &1"), active)
 
   'SHELL Subst("echo -n $( cat /proc/net/dev | sed 's/^ *//' | awk  -F':|[ \t]+' '/&1/ {print $2 }' )", active) WAIT TO prijato
-  SHELL Subst("echo -n $( cat /proc/net/dev | sed 's/^ *//'|awk  -F ': *|[ \t]+' '/&1/ {print $2 }' )", active) WAIT TO prijato
+  SHELL Subst("echo -n $( cat /proc/net/dev | sed 's/^ *//' | awk  -F ': *|[ \t]+' '/&1/ {print $2 }' )", active) WAIT TO prijato
   sit_prijato.Text = Velikost(CLong(prijato))
   'SHELL Subst("echo -n $( cat /proc/net/dev | sed 's/^ *//' | awk  -F':|[ \t]+' '/&1/ {print $10 }' )", active) WAIT TO odeslano
-  SHELL Subst("echo -n $( cat /proc/net/dev | sed 's/^ *//'|awk  -F ': *|[ \t]+' '/&1/ { print $10 }' )", active) WAIT TO odeslano
+  SHELL Subst("echo -n $( cat /proc/net/dev | sed 's/^ *//' | awk  -F ': *|[ \t]+' '/&1/ { print $10 }' )", active) WAIT TO odeslano
   sit_odeslano.Text = Velikost(CLong(odeslano))
 END
 
@@ -654,24 +694,24 @@ PUBLIC SUB getListMixer() AS String[]
 END
 
 
-PUBLIC SUB getListScreen() AS String[]
-  DIM ret_shell AS String
-  SHELL "echo -n $( xrandr | grep connected | grep -v disconnected | awk '{print $1}' )" WAIT TO ret_shell
-  RETURN Split(ret_shell, " ")
-END
-
-PUBLIC SUB getCountActiveScreen() AS Integer
-  DIM ret_shell AS String
-  SHELL "echo -n $( xrandr | grep '*' | awk '{print $1}' )" WAIT TO ret_shell
-  RETURN Split(ret_shell, " ").Count
-END
-
-
-PUBLIC SUB getActiveScreen() AS String
-  DIM ret_shell AS String
-  SHELL "echo -n $( xrandr | grep connected | grep -v disconnected | grep $( xrandr | grep '*' | awk '{print $1}' ) | awk '{print $1}' )" WAIT TO ret_shell
-  RETURN ret_shell
-END
+' PUBLIC SUB getListScreen() AS String[]
+'   DIM ret_shell AS String
+'   SHELL "echo -n $( xrandr | grep connected | grep -v disconnected | awk '{print $1}' )" WAIT TO ret_shell
+'   RETURN Split(ret_shell, " ")
+' END
+' 
+' PUBLIC SUB getCountActiveScreen() AS Integer
+'   DIM ret_shell AS String
+'   SHELL "echo -n $( xrandr | grep '*' | awk '{print $1}' )" WAIT TO ret_shell
+'   RETURN Split(ret_shell, " ").Count
+' END
+' 
+' 
+' PUBLIC SUB getActiveScreen() AS String
+'   DIM ret_shell AS String
+'   SHELL "echo -n $( xrandr | grep connected | grep -v disconnected | grep $( xrandr | grep '*' | awk '{print $1}' ) | awk '{print $1}' )" WAIT TO ret_shell
+'   RETURN ret_shell
+' END
 
 
 PUBLIC SUB nastaveni_button_Click()
@@ -807,6 +847,8 @@ PUBLIC SUB autoModCheck_Click()
 
   touchpad_start_stop.Enabled = NOT autoModCheck.Value
 
-  cpuselect.Enabled = NOT autoModCheck.Value
-  cpuset.Enabled = NOT autoModCheck.Value
+  IF $cpugovernor THEN 
+    cpuselect.Enabled = NOT autoModCheck.Value
+    cpuset.Enabled = NOT autoModCheck.Value
+  ENDIF 
 END
