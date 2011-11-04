@@ -174,217 +174,217 @@ msgstr ""
 msgid "Vypnuto"
 msgstr ""
 
-#: FMain.class:803
+#: FMain.class:804
 msgid ""
 "Verze programu: &1\n"
 "Autoři: Geniv & Kubijo"
 msgstr ""
 
-#: FMain.class:912
+#: FMain.class:913
 msgid "Ubuntu Mobile center"
 msgstr ""
 
-#: FMain.class:937
+#: FMain.class:938
 msgid "Jas"
 msgstr ""
 
-#: FMain.class:944
+#: FMain.class:945
 msgid "50%"
 msgstr ""
 
-#: FMain.class:950 FSettings.class:782
+#: FMain.class:951 FSettings.class:782
 msgid "+"
 msgstr ""
 
-#: FMain.class:955
+#: FMain.class:956
 msgid "-"
 msgstr ""
 
-#: FMain.class:978
+#: FMain.class:979
 msgid "Hlasitost"
 msgstr ""
 
-#: FMain.class:984
+#: FMain.class:985
 msgid "Ztišit"
 msgstr ""
 
-#: FMain.class:1000
+#: FMain.class:1001
 msgid "Baterie: xx%"
 msgstr ""
 
-#: FMain.class:1005
+#: FMain.class:1006
 msgid "Zbývající čas (odhad): xx:yy:zz"
 msgstr ""
 
-#: FMain.class:1014
+#: FMain.class:1015
 msgid "Profil:"
 msgstr ""
 
-#: FMain.class:1028
+#: FMain.class:1029
 msgid "Načíst"
 msgstr ""
 
-#: FMain.class:1034
+#: FMain.class:1035
 msgid "Uložit"
 msgstr ""
 
-#: FMain.class:1053
+#: FMain.class:1054
 msgid "CPU:"
 msgstr ""
 
-#: FMain.class:1064
+#: FMain.class:1065
 msgid "Nastavit"
 msgstr ""
 
-#: FMain.class:1069
+#: FMain.class:1070
 msgid "Typ:"
 msgstr ""
 
-#: FMain.class:1075
+#: FMain.class:1076
 msgid "Frekvence:"
 msgstr ""
 
-#: FMain.class:1081
+#: FMain.class:1082
 msgid "Počet jader:"
 msgstr ""
 
-#: FMain.class:1087
+#: FMain.class:1088
 msgid "Řízení výkonu:"
 msgstr ""
 
-#: FMain.class:1092 FSettings.class:799
+#: FMain.class:1093 FSettings.class:799
 msgid "..."
 msgstr ""
 
-#: FMain.class:1107
+#: FMain.class:1108
 msgid "Touchpad"
 msgstr ""
 
-#: FMain.class:1113
+#: FMain.class:1114
 msgid "Otevře okno s nastavením deformace obrazu"
 msgstr ""
 
-#: FMain.class:1114
+#: FMain.class:1115
 msgid "Start / Stop"
 msgstr ""
 
-#: FMain.class:1129
+#: FMain.class:1130
 msgid "Otevře okno file manageru"
 msgstr ""
 
-#: FMain.class:1130
+#: FMain.class:1131
 msgid "Spustit"
 msgstr ""
 
-#: FMain.class:1136
+#: FMain.class:1137
 msgid "File manager"
 msgstr ""
 
-#: FMain.class:1147
+#: FMain.class:1148
 msgid "Zobrazit/Skrýt další možnosti"
 msgstr ""
 
-#: FMain.class:1148
+#: FMain.class:1149
 msgid "Ostatní"
 msgstr ""
 
-#: FMain.class:1159
+#: FMain.class:1160
 msgid "Restart"
 msgstr ""
 
-#: FMain.class:1165
+#: FMain.class:1166
 msgid "Dropbox"
 msgstr ""
 
-#: FMain.class:1188
+#: FMain.class:1189
 msgid "Časové vypnutí"
 msgstr ""
 
-#: FMain.class:1195
+#: FMain.class:1196
 msgid "xx"
 msgstr ""
 
-#: FMain.class:1201
+#: FMain.class:1202
 msgid "v (hodin:minunt):"
 msgstr ""
 
-#: FMain.class:1214
+#: FMain.class:1215
 msgid ":"
 msgstr ""
 
-#: FMain.class:1221
+#: FMain.class:1222
 msgid "OK"
 msgstr ""
 
-#: FMain.class:1227
+#: FMain.class:1228
 msgid "Zrušit"
 msgstr ""
 
-#: FMain.class:1238
+#: FMain.class:1239
 msgid "Restart?"
 msgstr ""
 
-#: FMain.class:1255
+#: FMain.class:1256
 msgid "Testovat"
 msgstr ""
 
-#: FMain.class:1261
+#: FMain.class:1262
 msgid "Test Webkamery"
 msgstr ""
 
-#: FMain.class:1268
+#: FMain.class:1269
 msgid "Obráceně"
 msgstr ""
 
-#: FMain.class:1274
+#: FMain.class:1275
 msgid "Zrcadlově"
 msgstr ""
 
-#: FMain.class:1296
+#: FMain.class:1297
 msgid "Apache server"
 msgstr ""
 
-#: FMain.class:1324
+#: FMain.class:1325
 msgid "Doba běhu systému:"
 msgstr ""
 
-#: FMain.class:1342
+#: FMain.class:1343
 msgid "Nastavení"
 msgstr ""
 
-#: FMain.class:1348
+#: FMain.class:1349
 msgid "Síť:"
 msgstr ""
 
-#: FMain.class:1353
+#: FMain.class:1354
 msgid "xx:yy:zz"
 msgstr ""
 
-#: FMain.class:1359
+#: FMain.class:1360
 msgid "Skrýt do lišty"
 msgstr ""
 
-#: FMain.class:1369
+#: FMain.class:1370
 msgid "Rychlost stahování"
 msgstr ""
 
-#: FMain.class:1378
+#: FMain.class:1379
 msgid "xx kX/s"
 msgstr ""
 
-#: FMain.class:1383
+#: FMain.class:1384
 msgid "Rychlost uploadu"
 msgstr ""
 
-#: FMain.class:1398
+#: FMain.class:1399
 msgid "Verze programu"
 msgstr ""
 
-#: FMain.class:1405
+#: FMain.class:1406
 msgid "Automatický mód"
 msgstr ""
 
-#: FMain.class:1406
+#: FMain.class:1407
 msgid "Auto"
 msgstr ""
 

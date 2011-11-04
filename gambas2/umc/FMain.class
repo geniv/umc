@@ -679,9 +679,10 @@ END
 
 
 PUBLIC SUB nastaveni_button_Click()
+  DIM oldval AS Boolean = autoModCheck.Value
   autoModCheck.Value = FALSE  'bezpecnostni vypnuti podminenych prikazu
   IF FSettings.ShowModal() = 0 THEN
-    autoModCheck.Value = TRUE 
+    autoModCheck.Value = oldval 'vraceni posledni hodnoty
     runConditionGrid()
   ENDIF 
 END
