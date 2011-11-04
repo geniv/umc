@@ -50,18 +50,8 @@
     MoveScaled(1,8,24,3)
     Text = ("Minimalizovat do Tray")
   }
-  { batteryCheck CheckBox
-    MoveScaled(1,12,25,3)
-    Text = ("Zobrazovat baterii v Tray")
-  }
-  { batteryShowCombo ComboBox
-    MoveScaled(3,16,23,3)
-    Text = ("- kdy\xC5\xBE je p\xC5\x99\xC3\xADtomna baterie")
-    ReadOnly = True
-    List = [("- st\xC3\xA1le"), ("- pokud se vybij\xC3\xAD"), ("- pokud se nabij\xC3\xAD"), ("- pokud se nabij\xC3\xAD / vybij\xC3\xAD"), ("- pokud je p\xC5\x99\xC3\xADtomna")]
-  }
   { Label4 Label
-    MoveScaled(3,29,24,3)
+    MoveScaled(2,29,24,3)
     Text = ("Podm\xC3\xADn\xC4\x9Bn\xC3\xA9 nastavov\xC3\xA1n\xC3\xAD:")
   }
   { CheckBox3 CheckBox
@@ -70,14 +60,14 @@
     Text = ("Pt\xC3\xA1t se p\xC5\x99i ukon\xC4\x8Den\xC3\xAD")
   }
   { timerSpin SpinBox
-    MoveScaled(18,20,11,3)
+    MoveScaled(18,12,11,3)
     MinValue = 100
     MaxValue = 100000
     Step = 100
     Value = 10000
   }
   { Label5 Label
-    MoveScaled(1,20,17,3)
+    MoveScaled(1,12,17,3)
     Text = ("Interval \xC4\x8Dasova\xC4\x8De")
   }
   { addRowButton Button
@@ -88,43 +78,42 @@
     MoveScaled(1,33,81,21)
     { conditionalGrid GridView
       MoveScaled(0,0,81,21)
+      Drop = True
       Mode = Select.Single
       Scrollbar = Scroll.Vertical
     }
     { typeCombo ComboBox
       MoveScaled(4,4,12,3)
       Visible = False
+      ToolTip = ("Typ podm\xC3\xADnky")
       Text = ("...")
       ReadOnly = True
-      List = [("IF"), ("//CMD"), ("")]
+      List = [("IF"), ("//SET"), ("//CMD"), ("")]
     }
     { devCombo ComboBox
       MoveScaled(17,4,13,3)
       Visible = False
+      ToolTip = ("Typ za\xC5\x99\xC3\xADzen\xC3\xAD")
       Text = ("...")
       ReadOnly = True
-      List = [("BATTERY >"), ("BATTERY <"), ("BATTERY >="), ("BATTERY <="), ("BATTERY =="), ("BATTERY !="), ("ADAPTER is"), ("")]
-    }
-    { valueCheck CheckBox
-      MoveScaled(32,4,9,3)
-      Visible = False
-      Text = ("OFF")
+      List = [("BATTERY >"), ("BATTERY <"), ("BATTERY >="), ("BATTERY <="), ("BATTERY =="), ("BATTERY !="), ("ADAPTER is"), ("//TIME is"), ("")]
     }
     { valueSpin SpinBox
-      MoveScaled(32,8,9,3)
+      MoveScaled(32,7,9,3)
       Visible = False
     }
     { valueText TextBox
-      MoveScaled(32,12,9,3)
+      MoveScaled(32,10,9,3)
       Visible = False
       Text = ("")
     }
     { actionCombo ComboBox
       MoveScaled(43,4,12,3)
       Visible = False
+      ToolTip = ("Typ akce")
       Text = ("ComboBox1")
       ReadOnly = True
-      List = [("CONTRAST"), ("POWERSAVE"), ("TOUCHEPAD"), ("MESSAGE"), ("XRANDR"), ("SHELL"), ("")]
+      List = [("CONTRAST"), ("POWERSAVE"), ("TOUCHEPAD"), ("MESSAGE"), ("//XRANDR"), ("SHELL"), ("//VOLUME"), ("")]
     }
     { actionValueText TextBox
       MoveScaled(59,4,9,3)
@@ -134,40 +123,67 @@
     { saveButton Button
       MoveScaled(72,4,3,2)
       Visible = False
+      ToolTip = ("Ulo\xC5\xBEit \xC5\x99\xC3\xA1dek")
       Text = ("")
       Picture = Picture["icon:/small/save"]
     }
     { deleteButton Button
       MoveScaled(76,4,3,3)
       Visible = False
+      ToolTip = ("Smazat \xC5\x99\xC3\xA1dek")
       Text = ("")
       Picture = Picture["icon:/small/delete"]
     }
     { valueCombo ComboBox
-      MoveScaled(32,16,9,3)
+      MoveScaled(32,13,9,3)
       Visible = False
       Text = ("ComboBox1")
       ReadOnly = True
     }
     { actionValueSpin SpinBox
-      MoveScaled(59,8,9,3)
+      MoveScaled(59,7,9,3)
       Visible = False
     }
     { actionValueCombo ComboBox
-      MoveScaled(59,12,9,3)
+      MoveScaled(59,10,9,3)
       Visible = False
       Text = ("ComboBox1")
       ReadOnly = True
     }
     { actionValueCheck CheckBox
-      MoveScaled(59,16,9,3)
+      MoveScaled(59,13,9,3)
       Visible = False
       Text = ("OFF")
     }
     { enableCheck CheckBox
       MoveScaled(1,4,2,3)
       Visible = False
+      ToolTip = ("Povolen\xC3\xAD")
       Text = ("")
+    }
+    { valuePictureCheck PictureCheckBox
+      MoveScaled(32,4,9,3)
+      Visible = False
+      PictureTrue = Picture["ikony/switch_on.png"]
+      PictureFalse = Picture["ikony/switch_off.png"]
+      ToolTipTrue = "Zapnuto"
+      ToolTipFalse = "Vypnuto"
+      TextTrue = "ON"
+      TextFalse = "OFF"
+    }
+    { SpinBox1 SpinBox
+      MoveScaled(32,16,5,3)
+      Visible = False
+      Font = Font["-4"]
+      MaxValue = 23
+      Value = 24
+    }
+    { SpinBox2 SpinBox
+      MoveScaled(36,16,5,3)
+      Visible = False
+      Font = Font["-4"]
+      MaxValue = 59
+      Value = 59
     }
   }
   { backupButton Button

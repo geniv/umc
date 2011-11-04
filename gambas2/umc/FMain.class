@@ -30,6 +30,8 @@ PUBLIC SUB _new()
   casovac.Enabled = TRUE
   casovac.Delay = Settings["settings/timerdelay", 10000]
 
+'FIXME projit program a schromazdit si nazvy vsech utilit ktere jsou tu pouzivane! ab bylo
+'mozno se pak na ne ukazat ze existuji.. ty a ty one...
 
 ' IF Settings["application/pid", 0] > 0 THEN 
 '   DEBUG Message.Question(("program již běží. Opravdu spustit znovu?"), ("spustit"), ("ukončit!"))
@@ -44,7 +46,7 @@ PUBLIC SUB _new()
   pid = Settings["application/pid", 0]
   IF pid > 0 THEN 
       IF Message.Question(("program již běží. Opravdu spustit znovu?"), ("spustit, a zabit timto již běžící"), ("ukončit toto!")) = 1 THEN 
-          SHELL Subst("kill &1", pid) WAIT 'zabiti puvodniho programu
+          TRY SHELL Subst("kill &1", pid) WAIT 'zabiti puvodniho programu
           setPID()  'nastaveni noveho cisla procesu
         ELSE
           ME.Close(1)
@@ -204,10 +206,15 @@ PUBLIC SUB Form_Open()
   shutdown_hour.Text = Hour(Now) + 1
   shutdown_minute.Text = Minute(Now)
 
-  loadProfile()
+  'loadProfile()
   profileselect.Index = Settings["custom/profileindex", 0]
+  'nacteni stavu automodu
+  autoModCheck.Value = Settings["custom/automode", FALSE]
+  autoModCheck_Click()
 
-  FSettings.initConditionalGrid()
+  runConditionGrid()
+
+  initXrandr()
 
   'TODO dat spoustet ulohy po spusteni! - ktere jsou nastavene v nastaveni
 END
@@ -219,11 +226,17 @@ PUBLIC SUB Form_Close()
   Settings["application/pid"] = 0
   'DEBUG ostatni_expander.Hidden
   Settings["custom/expander"] = ostatni_expander.Hidden
+  Settings["custom/automode"] = autoModCheck.Value
   'saveprofile()
   Settings["custom/profileindex"] = profileselect.Index
   Settings.Save()
   trayclose()
 END
+
+PRIVATE SUB initXrandr()
+  TRY SHELL "xrandr > /dev/null"
+END
+
 
 'schovani ostatnich polozek
 PUBLIC SUB ostatni_expander_Hide()
@@ -304,7 +317,7 @@ PRIVATE SUB nactiBaterii()
     baterie_obrazek.Visible = TRUE
     baterie_procento.Text = Subst(("Baterie: &1%"), CInteger(ret_shell))
     $batteryVal = CInteger(ret_shell)
-    bat_obr = CInt((CInt(ret_shell) / 100) * 10) * 10
+    bat_obr = CInteger((CInteger(ret_shell) / 100) * 10) * 10
     'DEBUG bat_obr
     baterie_obrazek.Picture = Picture[Subst("ikony/baterka/&1.png", bat_obr)]
       ELSE 
@@ -314,17 +327,6 @@ PRIVATE SUB nactiBaterii()
 
   bat_available = IIf(ret_shell, TRUE, FALSE)
   profil_panel.Enabled = bat_available
-
-'TODO obrazek baterky ktera chybi!!!
-
-'TODO dodelat!!!
-  ' IF Settings["settings/batterytray", FALSE] THEN 
-  '   IF tray <> NULL THEN 
-  '     tray.Picture = Picture["ikony/baterka/mini10.png"]
-  '   ENDIF 
-  '     ELSE 
-  '   tray.Picture = Picture["ikony/tray.png"]
-  ' ENDIF 
 
   'nacteni stavu baterie
   SHELL "echo -n $( acpi | awk -F', ' '{ print $1 }' | awk '{ print $3 }' )" TO stav
@@ -337,7 +339,7 @@ PRIVATE SUB nactiBaterii()
   $onlineBat = online
 
   IF online THEN 
-'dodat blesk nabijeni nejak!
+'TODO dodat blesk nabijeni nejak! az v gambasu3!!
     'obr_blesk = Picture["ikony/baterka/blesk.png"]
     'obr_blesk.Transparent = TRUE
     'obrazek_blesk.Picture = obr_blesk
@@ -437,7 +439,7 @@ PRIVATE SUB nactiJas()
   jas_slider.MaxValue = 100
   jas_slider.PageStep = 10
 
-  jas_slider.Value = CInt(ret_shell)
+  jas_slider.Value = CInteger(ret_shell)
   jas_stav.Text = Subst("&1%", jas_slider.Value)
 END
 
@@ -493,14 +495,19 @@ PUBLIC SUB casovac_Timer()
 
   'obnovovani informaci v tray
   IF tray <> NULL THEN 
-    tray.Tooltip = Subst(("Jas: &1\n&2 (&3)\n&4\nCPU: &5"), jas_stav.Text, baterie_procento.Text, baterie_cas.Text, uptime_cas.Text, cpuselect.Text)
+    tray.Tooltip = Subst(("Jas: &1\n&2 (&3)\n&4\nCPU: &5"), jas_stav.Text, baterie_procento.Text, baterie_cas.Text, uptime_cas.Text, governorLabel.Text)
   ENDIF 
 
   IF Application.MainWindow.Minimized AND Settings["settings/minimizetray", FALSE] AND tray = NULL THEN 
-    trayhide_Click()  'nakliknuti tlacitka pro schovani do tray
+    traycreate()  'schovani do tray
   ENDIF 
 
-  FSettings.initConditionalGrid() 'provadeni podminenych prikazu
+  runConditionGrid()
+END
+
+
+PRIVATE SUB runConditionGrid()
+  IF autoModCheck.Value THEN FSettings.initConditionalGrid() 'provadeni podminenych prikazu
 END
 
 
@@ -615,9 +622,28 @@ PUBLIC SUB nactiTouchpad()
 END
 
 
-PUBLIC SUB touchpad_start_stop_Click()
-  SHELL Subst("synclient TouchpadOff=&1", IIf(panel_touchpad.Tag = "0", 1, 0))
+PUBLIC SUB setTouchpad(stav AS Boolean)
+  SHELL Subst("synclient TouchpadOff=&1", IIf(stav, 1, 0))
   nactiTouchpad()
+END
+
+
+PUBLIC SUB touchpad_start_stop_Click()
+  setTouchpad(IIf(panel_touchpad.Tag = "0", 1, 0))
+END
+
+
+PUBLIC SUB getListMixer() AS String[]
+  DIM ret_shell, item AS String
+  DIM ret AS NEW String[]
+  'prvich 5 polozek
+  SHELL "amixer | grep 'Simple mixer control' | awk -F\\' '{ print $2 }' | head -n5" WAIT TO ret_shell
+  FOR EACH item IN Split(ret_shell, "\n")
+    IF item THEN 
+      ret.Add(item)
+    ENDIF
+  NEXT 
+  RETURN ret
 END
 
 
@@ -641,9 +667,12 @@ PUBLIC SUB getActiveScreen() AS String
 END
 
 
-
 PUBLIC SUB nastaveni_button_Click()
-  FSettings.ShowModal()
+  autoModCheck.Value = FALSE  'bezpecnostni vypnuti podminenych prikazu
+  IF FSettings.ShowModal() = 0 THEN
+    autoModCheck.Value = TRUE 
+    runConditionGrid()
+  ENDIF 
 END
 
 
@@ -675,19 +704,27 @@ END
 
 
 PUBLIC SUB trayhide_Click()
-  DIM obr AS Picture
-
-  tray = NEW TrayIcon AS "Tray"
-  tray.Picture = Picture["ikony/tray.png"]
-  tray.Picture.Transparent = TRUE
-  tray.Visible = TRUE
-  ME.Hide() 'schovani okna
+  traycreate()
   WAIT 0.1
   casovac_Timer() 'dodatecne naplneni pro tray
 END
 
 
-PUBLIC SUB trayclose()
+PRIVATE SUB traycreate()
+  tray = NEW TrayIcon AS "Tray"
+  tray.Picture = Picture["ikony/tray.png"]
+  tray.Picture.Transparent = TRUE
+  tray.Visible = TRUE
+  ME.Hide() 'schovani okna  
+END
+
+
+PUBLIC SUB isTray() AS Boolean
+  RETURN IIf(tray = NULL, TRUE, FALSE)
+END
+
+
+PRIVATE SUB trayclose()
   IF tray <> NULL THEN
     tray.Visible = FALSE
     tray.Delete()
@@ -709,48 +746,59 @@ PUBLIC SUB cpuset_Click()
 END
 
 
-PUBLIC SUB profilesave_Click()
-  DIM nazev AS String
-  nazev = InputBox(("zadej název profilu"), ("Bateri pofil"), ("Název"))
-  IF nazev THEN 
-    $profiles.Add(nazev)
-    renderprofile()
-  ENDIF 
-END
-
-
-PRIVATE SUB renderprofile() 
-  DIM item AS String
-  profileselect.Clear
-  FOR EACH item IN $profiles
-    profileselect.Add(item)
-  NEXT
-END
-
-
-PRIVATE SUB loadProfile()
-  DIM count, i AS Integer
-  $profiles.Clear
-  count = Settings["custom/profilecount", 0]
-  FOR i = 0 TO count - 1
-    $profiles.Add(Settings["custom/profile" & i, ""])
-  NEXT 
-  renderprofile()
-END
-
-
-PRIVATE SUB saveprofile()
-  DIM item AS String
-  DIM index AS Integer
-  'ulozeni task
-  Settings["custom/profilecount"] = $profiles.length
-  FOR EACH item IN $profiles
-    Settings["custom/profile" & index] = item
-    INC index
-  NEXT 
-END
+' PUBLIC SUB profilesave_Click()
+'   DIM nazev AS String
+'   nazev = InputBox(("zadej název profilu"), ("Bateri pofil"), ("Název"))
+'   IF nazev THEN 
+'     $profiles.Add(nazev)
+'     renderprofile()
+'   ENDIF 
+' END
+' 
+' 
+' PRIVATE SUB renderprofile() 
+'   DIM item AS String
+'   profileselect.Clear
+'   FOR EACH item IN $profiles
+'     profileselect.Add(item)
+'   NEXT
+' END
+' 
+' 
+' PRIVATE SUB loadProfile()
+'   DIM count, i AS Integer
+'   $profiles.Clear
+'   count = Settings["custom/profilecount", 0]
+'   FOR i = 0 TO count - 1
+'     $profiles.Add(Settings["custom/profile" & i, ""])
+'   NEXT 
+'   renderprofile()
+' END
+' 
+' 
+' PRIVATE SUB saveprofile()
+'   DIM item AS String
+'   DIM index AS Integer
+'   'ulozeni task
+'   Settings["custom/profilecount"] = $profiles.length
+'   FOR EACH item IN $profiles
+'     Settings["custom/profile" & index] = item
+'     INC index
+'   NEXT 
+' END
 
 
 PUBLIC SUB aboutButton_Click()
   Message.Info(Subst(("Verze programu: &1\nAutoři: Geniv & Kubijo"), Application.Version))
+END
+
+PUBLIC SUB autoModCheck_Click()
+  jas_minus.Enabled = NOT autoModCheck.Value
+  jas_slider.Enabled = NOT autoModCheck.Value
+  jas_plus.Enabled = NOT autoModCheck.Value
+
+  touchpad_start_stop.Enabled = NOT autoModCheck.Value
+
+  cpuselect.Enabled = NOT autoModCheck.Value
+  cpuset.Enabled = NOT autoModCheck.Value
 END

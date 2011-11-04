@@ -42,9 +42,6 @@ PUBLIC SUB Form_Open()
 
   manager.Text = Settings["settings/manager", ""]
   minimizeTrayCheck.Value = Settings["settings/minimizetray", FALSE]
-  batteryCheck.Value = Settings["settings/batterytray", FALSE]
-  batteryShowCombo.Index = Settings["settings/batteryshowtray", 0]
-  batteryShowCombo.Enabled = batteryCheck.Value
   timerSpin.Value = Settings["settings/timerdelay", 10000]
 
   'inicializace gridu
@@ -58,6 +55,7 @@ PUBLIC SUB Form_Open()
   conditionalGrid.Columns[2].Width = 100
   'conditionalGrid.Columns[2].Title = ("operátor")
   conditionalGrid.Columns[3].Resizable = FALSE
+  conditionalGrid.Columns[3].Width = 50
   'conditionalGrid.Columns[3].Title = ("hodnota")
   conditionalGrid.Columns[4].Resizable = FALSE
   'conditionalGrid.Columns[4].Title = ("akce hodnoty")
@@ -78,8 +76,6 @@ PUBLIC SUB Form_Close()
   'TODO melo by nejak varovat ze zmeny v policku managet se projevi az po opetovnem spusteni aplikace!
   Settings["settings/manager"] = manager.Text
   Settings["settings/minimizetray"] = minimizeTrayCheck.Value
-  Settings["settings/batterytray"] = batteryCheck.Value
-  Settings["settings/batteryshowtray"] = batteryShowCombo.Index
   Settings["settings/timerdelay"] = timerSpin.Value
 END
 
@@ -151,7 +147,7 @@ END
 PUBLIC SUB initConditionalGrid()
   DIM i, j, rows, cols AS Integer
   DIM separe AS String[]
-
+'nacitani a provadeni podminenych ukolu
   rows = Settings["settings/condgridrows", 0]
   cols = conditionalGrid.Columns.Count
   IF rows > 0 THEN 
@@ -160,7 +156,7 @@ PUBLIC SUB initConditionalGrid()
       FOR j = 0 TO cols - 1
         $condGrid[i, j] = Settings[Subst("settings/condgrid_&1_&2", i, j), ""]
       NEXT 
-
+'TODO zajistit aby se pripadne prekriti nekopalo
       'pokud je radek aktivni
       IF $condGrid[i, 0] = "X" THEN 
         'vyhodnoceni IF
@@ -273,10 +269,18 @@ PRIVATE SUB execConditionalGrid(action AS String, actionValue AS String)
     CASE "CONTRAST"
       FMain.setJas(CInteger(actionValue))
     CASE "MESSAGE"
-      IF NOT $zobrazeno THEN 
-        $zobrazeno = TRUE
-        IF Message(actionValue) THEN $zobrazeno = FALSE
+      IF NOT FMain.isTray() THEN 
+        IF NOT $zobrazeno THEN 
+          $zobrazeno = TRUE
+          IF Message(actionValue) THEN $zobrazeno = FALSE
+        ENDIF 
+          ELSE 
+        Balloon(actionValue, FMain)
       ENDIF 
+    CASE "TOUCHEPAD"
+      FMain.setTouchpad(IIf(actionValue = "ON", FALSE, TRUE))
+    CASE "VOLUME"
+      'TODO nejak dodelat!
     CASE "SHELL"  'tyto prikazy volit strasne obezretne!
       DEBUG actionValue
       TRY SHELL actionValue WAIT
@@ -284,6 +288,7 @@ PRIVATE SUB execConditionalGrid(action AS String, actionValue AS String)
 'DEBUG action, actionValue
 END
 
+PRIVATE $showrow AS Boolean = FALSE
 
 PRIVATE SUB renderGrid()
   DIM x, y, w, h, row, i AS Integer
@@ -291,12 +296,12 @@ PRIVATE SUB renderGrid()
   DIM items AS String[]
   row = conditionalGrid.Row
 
-  IF row > -1 THEN
+  IF row > -1 AND $showrow THEN
     conditionalGrid.ScrollX = 0 'zaruceni neuskakovani scrollu do prava
     enableCheck.Visible = TRUE
     typeCombo.Visible = TRUE
     devCombo.Visible = TRUE
-    valueCheck.Visible = TRUE
+    valuePictureCheck.Visible = TRUE
     valueSpin.Visible = TRUE
     valueText.Visible = TRUE
     valueCombo.Visible = TRUE
@@ -307,7 +312,7 @@ PRIVATE SUB renderGrid()
     actionValueCheck.Visible = TRUE
     saveButton.Visible = TRUE
     deleteButton.Visible = TRUE
-
+'TODO pridat automatic mod ktery dizablije prvky pokud pojede pokud pojedou podminene podminky!!
     FOR i = 0 TO conditionalGrid.Columns.Count - 1
       x = conditionalGrid[row, i].X + conditionalGrid.X
       y = conditionalGrid[row, i].Y + conditionalGrid.Y
@@ -315,7 +320,7 @@ PRIVATE SUB renderGrid()
       h = conditionalGrid[row, i].H
 
       rowText = IIf(conditionalGrid[row, i].Text, conditionalGrid[row, i].Text, "")
-'TODO moznost povolovat a zakazovat!!!!!!
+
       SELECT CASE i
         CASE 0
           enableCheck.Value = (rowText = "X")
@@ -333,27 +338,30 @@ PRIVATE SUB renderGrid()
           SELECT CASE devCombo.Text 'podle devCombo se voli typ
             'spinbox
             CASE "BATTERY >", "BATTERY <", "BATTERY >=", "BATTERY <=", "BATTERY ==", "BATTERY !=" '+pokud je adapter pritomen!
-              valueCheck.Visible = FALSE
+              'valueCheck.Visible = FALSE
+              'valueCheckPicture.Visible = FALSE
+              valuePictureCheck.Visible = FALSE
               valueSpin.Value = CInteger(IIf(IsDigit(rowText), rowText, 0))
               valueSpin.Move(x, y, w, h)
               valueText.Visible = FALSE 'TODO momentalne nevyuzito
               valueCombo.Visible = FALSE
             'checkbox
             CASE "ADAPTER is" ', "TOUCHEPAD"
-              valueCheck.Text = IIf(rowText, rowText, "OFF")
-              valueCheck.Value = IIf(rowText = "ON", TRUE, FALSE)
-              valueCheck.Move(x, y, w, h)
+              valuePictureCheck.Value = IIf(rowText = "ON", TRUE, FALSE)
+              valuePictureCheck.Move(x, y, w, h)
               valueSpin.Visible = FALSE
               valueText.Visible = FALSE
               valueCombo.Visible = FALSE
+            'double spinbox
+            'CASE "TIME is"
             'selectbox
-            CASE "SCREEN is", "SCREEN conn", "SCREEN disconn" 'je dostupna obrazovka, pripoji se obrazovka, odpoji se obrazovka
-              valueCheck.Visible = FALSE
-              valueSpin.Visible = FALSE
-              valueText.Visible = FALSE
-              valueCombo.List = FMain.getListScreen() 'nacte seznam pripojenych obrazovek
-              valueCombo.Text = rowText 'nastaveni polozky jako 2.
-              valueCombo.Move(x, y, w, h)
+            ' CASE "SCREEN is", "SCREEN conn", "SCREEN disconn" 'je dostupna obrazovka, pripoji se obrazovka, odpoji se obrazovka
+            '   valuePictureCheck.Visible = FALSE
+            '   valueSpin.Visible = FALSE
+            '   valueText.Visible = FALSE
+            '   valueCombo.List = FMain.getListScreen() 'nacte seznam pripojenych obrazovek
+            '   valueCombo.Text = rowText 'nastaveni polozky jako 2.
+            '   valueCombo.Move(x, y, w, h)
             'textbox
             ' CASE "NETWORK"
             '   valueCheck.Visible = FALSE
@@ -361,7 +369,7 @@ PRIVATE SUB renderGrid()
             '   valueText.Move(x, y, w, h)
             'vychozi
             DEFAULT 
-              valueCheck.Visible = FALSE
+              valuePictureCheck.Visible = FALSE
               valueSpin.Visible = FALSE
               valueText.Visible = FALSE
               valueCombo.Visible = FALSE
@@ -373,13 +381,15 @@ PRIVATE SUB renderGrid()
 
         CASE 5
           SELECT CASE actionCombo.Text
-            CASE "CONTRAST"
+            'spinbox
+            CASE "CONTRAST", "VOLUME"
               actionValueText.Visible = FALSE
               actionValueSpin.Value = CInteger(IIf(IsDigit(rowText), rowText, 0))
               actionValueSpin.Move(x, y, w, h)
               actionValueCombo.Visible = FALSE
               actionValueCheck.Visible = FALSE
 
+            'combobox
             CASE "POWERSAVE"
               actionValueText.Visible = FALSE
               actionValueSpin.Visible = FALSE
@@ -388,19 +398,28 @@ PRIVATE SUB renderGrid()
               actionValueCombo.Move(x, y, w, h)
               actionValueCheck.Visible = FALSE
 
-            CASE "XRANDR"
-              actionValueText.Visible = FALSE
-              actionValueSpin.Visible = FALSE
-              items = ["AUTO", "OFF"]
-              FOR EACH item IN FMain.getListScreen()
-                items.Add("AUTO:" & item)
-                items.Add("OFF:" & item)
-              NEXT
-              actionValueCombo.List = items.Sort()  'seradi polozky
-              actionValueCombo.Text = rowText 'nastaveni polozky jako 2.
-              actionValueCombo.Move(x, y, w, h)
-              actionValueCheck.Visible = FALSE
+            ' CASE "VOLUME"
+            '   actionValueText.Visible = FALSE
+            '   actionValueSpin.Visible = FALSE
+            '   actionValueCombo.List = FMain.getListMixer()
+            '   actionValueCombo.Text = rowText 'nastaveni polozky jako 2.
+            '   actionValueCombo.Move(x, y, w, h)
+            '   actionValueCheck.Visible = FALSE
 
+            ' CASE "XRANDR"
+            '   actionValueText.Visible = FALSE
+            '   actionValueSpin.Visible = FALSE
+            '   items = ["AUTO", "OFF"]
+            '   FOR EACH item IN FMain.getListScreen()
+            '     items.Add("AUTO:" & item)
+            '     items.Add("OFF:" & item)
+            '   NEXT
+            '   actionValueCombo.List = items.Sort()  'seradi polozky
+            '   actionValueCombo.Text = rowText 'nastaveni polozky jako 2.
+            '   actionValueCombo.Move(x, y, w, h)
+            '   actionValueCheck.Visible = FALSE
+
+            'checkbox
             CASE "TOUCHEPAD"
               actionValueText.Visible = FALSE
               actionValueSpin.Visible = FALSE
@@ -437,6 +456,7 @@ END
 
 
 PUBLIC SUB conditionalGrid_MouseUp()
+  $showrow = TRUE
   renderGrid()
 END
 
@@ -467,9 +487,8 @@ PUBLIC SUB devCombo_Click()
 END
 
 'value - 0
-PUBLIC SUB valueCheck_Click()
-  valueCheck.Text = IIf(valueCheck.Value, "ON", "OFF")
-  conditionalGrid[conditionalGrid.Row, 3].Text = valueCheck.Text
+PUBLIC SUB valuePictureCheck_Click()
+  conditionalGrid[conditionalGrid.Row, 3].Text = valuePictureCheck.Text
 END
 
 'value - 1
@@ -515,13 +534,10 @@ PUBLIC SUB actionValueCheck_Click()
 END
 
 
-PUBLIC SUB batteryCheck_Click()
-  batteryShowCombo.Enabled = batteryCheck.Value
-END
-
-
 PUBLIC SUB addRowButton_Click()
   conditionalGrid.Rows.Count += 1
+  conditionalGrid.Row = conditionalGrid.Rows.Count - 1  'oznaceni posledniho radku
+  renderGrid()
 END
 
 
@@ -530,7 +546,7 @@ PUBLIC SUB saveButton_Click()
   DIM row AS Integer = conditionalGrid.Row
   DIM rowText AS String
 
-  IF row > -1 THEN
+  IF row > -1 AND $showrow THEN
     FOR i = 0 TO conditionalGrid.Columns.Count - 1
       SELECT CASE i
         'CASE 0
@@ -542,9 +558,9 @@ PUBLIC SUB saveButton_Click()
         CASE 3
           SELECT CASE devCombo.Text
             CASE "ADAPTER is"
-              rowText = valueCheck.Text
-            CASE "SCREEN is", "SCREEN conn", "SCREEN disconn"
-              rowText = valueCombo.Text
+              rowText = valuePictureCheck.Text
+            ' CASE "SCREEN is", "SCREEN conn", "SCREEN disconn"
+            '   rowText = valueCombo.Text
             DEFAULT 
               rowText = CString(valueSpin.Value)
           END SELECT 
@@ -552,7 +568,7 @@ PUBLIC SUB saveButton_Click()
         '  rowText = actionCombo.Text
         CASE 5
           SELECT CASE actionCombo.Text
-            CASE "CONTRAST"
+            CASE "CONTRAST", "VOLUME"
               rowText = CString(actionValueSpin.Text)
             CASE "POWERSAVE", "XRANDR"
               rowText = actionValueCombo.Text
@@ -568,6 +584,7 @@ PUBLIC SUB saveButton_Click()
     NEXT
 
     hideComponentRow()
+    $showrow = FALSE
   ENDIF 
 END
 
@@ -576,7 +593,7 @@ PRIVATE SUB hideComponentRow()
   enableCheck.Visible = FALSE
   typeCombo.Visible = FALSE
   devCombo.Visible = FALSE
-  valueCheck.Visible = FALSE
+  valuePictureCheck.Visible = FALSE
   valueSpin.Visible = FALSE
   valueText.Visible = FALSE
   valueCombo.Visible = FALSE
@@ -605,4 +622,33 @@ PUBLIC SUB deleteButton_Click()
     ENDIF
     hideComponentRow()
   ENDIF 
+END
+
+
+PRIVATE SUB swapRow(src AS Integer, dest AS Integer)
+  DIM i AS Integer
+  DIM pom AS String
+  FOR i = 0 TO conditionalGrid.Columns.Count - 1
+    pom = conditionalGrid[dest, i].Text
+    conditionalGrid[dest, i].Text = conditionalGrid[src, i].Text
+    conditionalGrid[src, i].Text = pom
+  NEXT
+END
+
+
+PRIVATE $torow AS Integer = -1
+PRIVATE $fromrow AS Integer = -1
+
+PUBLIC SUB conditionalGrid_Select()
+  $fromrow = conditionalGrid.Row
+END
+
+
+PUBLIC SUB conditionalGrid_MouseDrag()
+  hideComponentRow()
+  IF $fromrow <> -1 AND $torow <> -1 AND Mouse.Right AND $fromrow <> $torow AND Abs($fromrow - $torow) = 1 THEN 
+    'DEBUG $fromrow, $torow
+    swapRow($fromrow, $torow)
+  ENDIF 
+  $torow = conditionalGrid.Row
 END

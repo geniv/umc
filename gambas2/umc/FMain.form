@@ -408,6 +408,12 @@
         Text = ("")
         Picture = Picture["icon:/small/info"]
       }
+      { autoModCheck CheckBox
+        MoveScaled(62,1,8,3)
+        ToolTip = ("Automatick\xC3\xBD m\xC3\xB3d")
+        Text = ("Auto")
+        Value = CheckBox.True
+      }
     }
   }
   { casovac #Timer

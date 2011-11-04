@@ -44,8 +44,8 @@ ip route | awk -W posix '/dev/ { print $3 }' | head -n 1
 zjištění jasu: cat /proc/acpi/video/VGA/LCD/brightness 
 přečíst levels a dle něho nastavit kroky
 
-	sudo -s "echo -n XX > /proc/acpi/video/VGA/$( ls /proc/acpi/video/VGA/ | grep LCD )/brightness"
-	cat /proc/acpi/video/VGA/$( ls /proc/acpi/video/VGA/ | grep LCD )/info 
+sudo -s "echo -n XX > /proc/acpi/video/VGA/$( ls /proc/acpi/video/VGA/ | grep LCD )/brightness"
+cat /proc/acpi/video/VGA/$( ls /proc/acpi/video/VGA/ | grep LCD )/info 
 
 [12:08:16] <marwin> tak to napiš do skriptu, kterumu se předava jeden parametr jako nastavení jasu
 [12:08:20] <marwin> pak zadej
@@ -77,8 +77,8 @@ bt on: sudo hciconfig hci0 up
 </nepoužívat!>
 
 uptime
-	časované vypnutí: gksudo shutdown -h|r 3:00
-	manual: man 8 shutdown
+ časované vypnutí: gksudo shutdown -h|r 3:00
+ manual: man 8 shutdown
 
 	test webkamery: 
 mplayer tv:// -tv driver=v4l2:width=640:height=480:device=/dev/video0 -fps 15 [-flip] -fs
