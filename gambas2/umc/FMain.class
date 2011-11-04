@@ -100,18 +100,10 @@ END
 
 
 PRIVATE SUB existJas() AS Boolean
-  'DIM ret_shell AS String
-'dostacuje, ale ne uplne!!
-'/proc/acpi/video$ find . -name brightness -exec cat {} \;
-'/proc/acpi/video$ find . -name brightness -print -exec cat {} \;
-  'SHELL "echo -n $( cat /proc/acpi/video/VGA/$( ls /proc/acpi/video/VGA/ | grep LCD )/brightness )" WAIT TO ret_shell
-  'RETURN IIf(ret_shell = "<not supported>", FALSE, TRUE)
-  
   DIM ret_shell AS String
+  'overeni zda jde nastavovat jas
   SHELL "echo -n $( qdbus org.gnome.PowerManager /org/gnome/PowerManager/Backlight GetBrightness )" WAIT TO ret_shell
   RETURN IsDigit(ret_shell)
-  
-  'RETURN TRUE 'mozna jen v budoucnu tesotvat pripojeni dbus sbernice
 END
 
 PRIVATE SUB existHlasitost() AS Boolean
@@ -178,16 +170,14 @@ PRIVATE SUB existShutdown() AS Boolean
   RETURN ret_shell
 END
 
-PUBLIC SUB Form_Show()
-  ME.X = Settings["application/x", 0]
-  ME.Y = Settings["application/y", 0]
-END
-
 PUBLIC SUB Form_Open()
-  DIM ret_shell AS String
-  'nacteni pozice, expanderu
-  ME.X = Settings["application/x", 0]
-  ME.Y = Settings["application/y", 0]
+  'odpocitani si realne pozice 0,0
+  IF Settings["application/x_0", -1] = -1 THEN
+    ME.Move(0, 0) 'posunuti do realneho rohu
+     ELSE 
+    ME.Move(Settings["application/x", 0] - Settings["application/x_0", 0], Settings["application/y", 0] - Settings["application/y_0", 0])
+  ENDIF
+
   ostatni_expander.Hidden = Settings["custom/expander", FALSE]
   'DEBUG ostatni_expander.Hidden
   IF ostatni_expander.Hidden THEN 
@@ -220,14 +210,14 @@ PUBLIC SUB Form_Open()
   runConditionGrid()
 
   initXrandr()
-
   'TODO dat spoustet ulohy po spusteni! - ktere jsou nastavene v nastaveni
+  casovac.Trigger() 'predcasne spusteni casovece
 END
 
 PUBLIC SUB Form_Close()
   'ulozeni pozice, expanderu
-  Settings["application/x"] = ME.ScreenX - 1
-  Settings["application/y"] = ME.ScreenY - 27
+  Settings["application/x"] = ME.ScreenX
+  Settings["application/y"] = ME.ScreenY
   Settings["application/pid"] = 0
   'DEBUG ostatni_expander.Hidden
   Settings["custom/expander"] = ostatni_expander.Hidden
@@ -514,6 +504,12 @@ PUBLIC SUB casovac_Timer()
   ENDIF 
 
   runConditionGrid()
+
+  IF Settings["application/x_0", -1] = -1 THEN 
+    Settings["application/x_0"] = ME.ScreenX
+    Settings["application/y_0"] = ME.ScreenY
+    Settings.Save()
+  ENDIF 
 END
 
 
